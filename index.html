@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob: https://*.ts.net; media-src 'self' blob: https://*.ts.net; connect-src 'self' https://*.ts.net; font-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'self'">
+<meta name="referrer" content="no-referrer">
+<title>CODICE · ¿Es estafa?</title>
+<meta name="description" content="Comprueba si un número, enlace, perfil o tarjeta está reportado como estafa en Cuba. Reporta de forma anónima y ayuda a otros.">
+<meta name="theme-color" content="#0B0F17">
+<link rel="icon" href="img/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="img/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="img/favicon-16.png" sizes="16x16" type="image/png">
+<link rel="apple-touch-icon" href="img/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CODICE">
+<meta property="og:title" content="CODICE · ¿Es estafa? Compruébalo antes de pagar">
+<meta property="og:description" content="Comprueba números, enlaces y tarjetas reportados como estafa en Cuba. Reporta de forma anónima.">
+<meta property="og:image" content="https://codicecuba.org/img/og.png">
+<meta property="og:url" content="https://codicecuba.org/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="css/codice.css?v=1.0.0">
+<script src="config.js?v=1.0.0"></script>
+<script type="module" src="js/app.js?v=1.0.0"></script>
+</head>
+<body>
+<a class="saltar" href="#principal">Saltar al contenido</a>
+<div id="franja" hidden></div>
+<header class="cabecera">
+  <a class="marca" href="#/" aria-label="CODICE, inicio">
+    <img src="img/logo.svg" alt="" width="32" height="32"><span>CODICE</span>
+  </a>
+  <nav id="menu" class="menu" aria-label="Principal"></nav>
+  <button id="boton-menu" class="boton-menu" aria-label="Abrir menú" aria-expanded="false" aria-controls="menu">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+  </button>
+</header>
+<main id="principal" tabindex="-1"><noscript><p class="aviso">CODICE necesita JavaScript para funcionar.</p></noscript></main>
+<footer class="pie">
+  <p class="pie-oficial">La única dirección oficial es <strong>codicecuba.org</strong>. CODICE nunca te pedirá dinero, contraseñas ni códigos de verificación.</p>
+  <p class="pie-enlaces"><a href="#/guia">Guía</a> · <a href="#/privacidad">Privacidad y anonimato</a> · <a href="#/ayuda">Ayuda y quejas</a> · <a href="#/colaborar">Quiero colaborar</a></p>
+  <p class="pie-version">CODICE <span id="version">1.0.0</span></p>
+</footer>
+<div id="avisos-flotantes" class="toasts" aria-live="polite"></div>
+</body>
+</html>

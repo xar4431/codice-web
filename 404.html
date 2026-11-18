@@ -1,0 +1,12 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>CODICE</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-pAuRKFvm6fExuVT/FtatEweDHnZIZMxp0cz/cDxdPKE='">
+<script>// Enlaces como codicecuba.org/caso/CDX-26-ABCDE se llevan a la ruta interna #/caso/...
+// Funciona en el dominio propio y en usuario.github.io/codice-web/ (subcarpeta).
+(function () {
+  var partes = location.pathname.replace(/^\/+/, "").split("/");
+  var base = "/";
+  if (/github\.io$/.test(location.hostname) && partes.length > 1) base = "/" + partes.shift() + "/";
+  var ruta = partes.join("/");
+  location.replace(base + (ruta ? "#/" + ruta : "") + location.search);
+})();
+</script></head><body><p>Redirigiendo a CODICE…</p></body></html>
