@@ -29,6 +29,7 @@ function anadir(el, hijos) {
 export function seguroUrl(u) {
   // Solo rutas internas, https, datos de imagen y blobs. Nada de javascript:
   if (/^(#|\/(?!\/)|https:\/\/|data:image\/|blob:|mailto:)/i.test(u)) return u;
+  if (/^[a-z0-9_-][a-z0-9_./-]*$/i.test(u) && !u.includes("..")) return u;
   return "#";
 }
 
