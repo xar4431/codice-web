@@ -114,6 +114,20 @@ input[type=date] { display: block; min-width: 0; max-width: 100%; -webkit-appear
 input[type=date]::-webkit-date-and-time-value { text-align: left; }
 .filtros { display: grid; gap: 0 12px; grid-template-columns: repeat(auto-fill, minmax(140px, 200px)); }
 .filtros > * { min-width: 0; }
+/* Imágenes de la guía */
+.guia-figuras { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); align-items: start; margin-top: 14px; }
+.guia-figuras > * { min-width: 0; }
+.guia-figuras.una { grid-template-columns: minmax(0, 340px); justify-content: center; margin-top: 0; }
+.guia-figuras.pasos-img { grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); }
+@media (max-width: 520px) { .guia-figuras.pasos-img { grid-template-columns: minmax(0, 270px); justify-content: center; } }
+.guia-figuras.una-ancha { grid-template-columns: minmax(0, 1fr); }
+@media (max-width: 600px) { .guia-figuras.una-ancha { grid-template-columns: minmax(0, 340px); justify-content: center; } }
+.guia-figura { margin: 0; }
+.guia-figura picture { display: block; }
+.guia-figura img { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--borde); background: #0B0F17; }
+.guia-figura figcaption { color: var(--suave); font-size: .88rem; margin-top: 8px; text-align: center; }
+.fila-indicador { display: grid; gap: 10px 14px; grid-template-columns: minmax(0, 1fr) minmax(0, 2fr); }
+@media (max-width: 520px) { .fila-indicador { grid-template-columns: minmax(0, 1fr); } }
 @media (max-width: 520px) { .filtros { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } .filtros > :last-child:nth-child(odd) { grid-column: 1 / -1; } }
 textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
 input:focus, select:focus, textarea:focus { border-color: var(--primario); outline: none; box-shadow: 0 0 0 3px rgba(56, 189, 248, .2); }
