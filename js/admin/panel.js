@@ -2,20 +2,22 @@
 import { panel, pedir, sesion, ErrorApi } from "../api.js";
 import { h, vaciar, campo, toast, cargando, icono, copiar } from "../ui.js";
 
+// Las pantallas se piden con la edición de la web para que el navegador no use copias viejas.
+const E = "?e=" + ((window.CODICE_CONFIG || {}).edicion || "");
 const SECCIONES = {
-  "": ["Tareas", () => import("./hoy.js")],
-  cola: ["Reportes", () => import("./cola.js"), "revisar"],
-  importar: ["Importar casos", () => import("./importar.js"), "admin"],
-  campanas: ["Campañas", () => import("./campanas.js")],
-  investigacion: ["Investigación", () => import("./investigacion.js")],
-  tickets: ["Tickets", () => import("./tickets.js"), "tickets"],
-  solicitudes: ["Colaboración", () => import("./solicitudes.js"), "tickets"],
-  usuarios: ["Usuarios", () => import("./usuarios.js"), "sancionar"],
-  avisos: ["Avisos", () => import("./avisos.js")],
-  papelera: ["Papelera", () => import("./papelera.js"), "retirar"],
-  historial: ["Historial", () => import("./historial.js")],
-  servidor: ["Servidor", () => import("./servidor.js"), "servidor"],
-  ajustes: ["Ajustes", () => import("./ajustes.js"), "admin"],
+  "": ["Tareas", () => import("./hoy.js" + E)],
+  cola: ["Reportes", () => import("./cola.js" + E), "revisar"],
+  importar: ["Importar casos", () => import("./importar.js" + E), "admin"],
+  campanas: ["Campañas", () => import("./campanas.js" + E)],
+  investigacion: ["Investigación", () => import("./investigacion.js" + E)],
+  tickets: ["Tickets", () => import("./tickets.js" + E), "tickets"],
+  solicitudes: ["Colaboración", () => import("./solicitudes.js" + E), "tickets"],
+  usuarios: ["Usuarios", () => import("./usuarios.js" + E), "sancionar"],
+  avisos: ["Avisos", () => import("./avisos.js" + E)],
+  papelera: ["Papelera", () => import("./papelera.js" + E), "retirar"],
+  historial: ["Historial", () => import("./historial.js" + E)],
+  servidor: ["Servidor", () => import("./servidor.js" + E), "servidor"],
+  ajustes: ["Ajustes", () => import("./ajustes.js" + E), "admin"],
 };
 const GRUPOS = [["Trabajo diario", ["", "cola", "importar", "campanas", "investigacion"]], ["Comunidad", ["tickets", "solicitudes", "usuarios", "avisos"]],
   ["Control", ["papelera", "historial", "servidor", "ajustes"]]];

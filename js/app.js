@@ -2,19 +2,21 @@
 import { pedir, sesion } from "./api.js";
 import { $, h, vaciar, cargando, toast } from "./ui.js";
 
+// Las páginas se piden con la edición de la web para que el navegador no use copias viejas.
+const E = "?e=" + ((window.CODICE_CONFIG || {}).edicion || "");
 const RUTAS = {
-  "": () => import("./paginas/inicio.js"),
-  campanas: () => import("./paginas/campanas.js"),
-  campana: () => import("./paginas/campana.js"),
-  caso: () => import("./paginas/caso.js"),
-  casos: () => import("./paginas/casos.js"),
-  reportar: () => import("./paginas/reportar.js"),
-  seguimiento: () => import("./paginas/seguimiento.js"),
-  cuenta: () => import("./paginas/cuenta.js"),
-  ayuda: () => import("./paginas/ayuda.js"),
-  colaborar: () => import("./paginas/colaborar.js"),
-  guia: () => import("./paginas/guia.js"),
-  privacidad: () => import("./paginas/privacidad.js"),
+  "": () => import("./paginas/inicio.js" + E),
+  campanas: () => import("./paginas/campanas.js" + E),
+  campana: () => import("./paginas/campana.js" + E),
+  caso: () => import("./paginas/caso.js" + E),
+  casos: () => import("./paginas/casos.js" + E),
+  reportar: () => import("./paginas/reportar.js" + E),
+  seguimiento: () => import("./paginas/seguimiento.js" + E),
+  cuenta: () => import("./paginas/cuenta.js" + E),
+  ayuda: () => import("./paginas/ayuda.js" + E),
+  colaborar: () => import("./paginas/colaborar.js" + E),
+  guia: () => import("./paginas/guia.js" + E),
+  privacidad: () => import("./paginas/privacidad.js" + E),
   admin: () => import("./admin/panel.js"),
 };
 
