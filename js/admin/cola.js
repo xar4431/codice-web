@@ -40,7 +40,8 @@ export async function mostrar(caja, [id], params) {
       h("a.crece", { href: `#/admin/cola/${r.id}?estado=${estado}&sin-subir=1`, estilo: { color: "inherit", textDecoration: "none" } },
         h("span.titulo", `${r.codigo} · ${r.tipo_nombre}`), h("span.meta", `${r.municipio} · ${fechaHora(r.creado)} · ${r.pruebas} pruebas`),
         h("span.meta", { estilo: { display: "block" } }, r.extracto)),
-      r.prioridad >= 60 ? insignia("urgente", "rojo") : r.campana_id ? insignia("campaña", "ambar") : null));
+      r.prioridad >= 60 ? insignia("urgente", "rojo") : r.campana_id ? insignia("campaña", "ambar") : null,
+      r.fuente ? insignia("fuente pública", "azul") : null));
   })) : vacio("No hay reportes aquí."), d.total > 50 ? h("p.tenue", `Mostrando 50 de ${d.total}.`) : null);
   if (id) await pintarDetalle(detalle, Number(id), estado);
 }
@@ -77,8 +78,9 @@ async function pintarDetalle(caja, id, estado) {
     datos: () => h("div.pila",
       h("div.ficha-meta", h("span", r.tipo_nombre), h("span", r.canal), h("span", `${r.municipio}, ${r.provincia}`), h("span", `Ocurrió: ${fecha(r.fecha)} (${r.precision})`)),
       h("div.aviso", { estilo: { whiteSpace: "pre-wrap" } }, r.descripcion),
+      r.fuente ? h("p", insignia("Fuente pública", "azul"), " ", h("a", { href: r.fuente, target: "_blank", rel: "noopener noreferrer" }, r.fuente)) : null,
       r.entidad ? h("p", "Suplanta a: ", h("strong", r.entidad)) : null,
-      h("p.tenue", r.autor ? `Enviado con cuenta: ${r.autor.usuario}${r.autor.confianza !== undefined ? ` · confianza ${r.autor.confianza}` : ""}` : "Enviado sin cuenta",
+      r.fuente ? h("p.tenue", "Caso importado por el admin desde una fuente pública.") : h("p.tenue", r.autor ? `Enviado con cuenta: ${r.autor.usuario}${r.autor.confianza !== undefined ? ` · confianza ${r.autor.confianza}` : ""}` : "Enviado sin cuenta",
         r.repetido_origen ? ` · ${r.repetido_origen} reportes más desde la misma conexión esta semana` : "", r.caso_padre ? ` · se suma al caso ${r.caso_padre}` : ""),
       r.autor?.id && puede("revisar") ? h("div.fila", h("a.boton.chico", { href: `#/admin/usuarios/${r.autor.id}` }, "Ver usuario")) : null,
       r.mensajes.length ? h("div.pila", h("h3", "Conversación"), r.mensajes.map((m) => h("div.aviso", h("strong", m.autor === "moderacion" ? "Moderación" : "Denunciante"), h("span.tenue", ` · ${fechaHora(m.creado)}`), h("p", { estilo: { margin: "4px 0 0" } }, m.texto)))) : null),
