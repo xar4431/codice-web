@@ -1,15 +1,20 @@
 import { panel, blobUrl } from "../api.js";
-import { h, vaciar, insignia, fechaHora, toast, vacio, cargando } from "../ui.js";
+import { h, vaciar, insignia, fechaHora, toast, vacio, cargando, recordarSeleccion, subirAlDetalle, volverASeleccion } from "../ui.js";
 
 export async function mostrar(caja, [id], params) {
   const estado = params.get("estado") || "abierto";
   const d = await panel(`/tickets?estado=${estado}`);
   const det = h("div", id ? cargando() : vacio("Elige un ticket."));
+  const volver = id ? h("a.volver.volver-lista", { href: `#/admin/tickets?estado=${estado}&sin-subir=1` }, "← Volver a la lista de tickets") : null;
+  const columnaDetalle = h("div", volver, det);
   vaciar(caja, h("div.cabecera-pagina", h("div", h("h1", "Tickets"), h("p", "Quejas y ayuda de los usuarios. Todo queda dentro de la web."))),
     h("div.fila", { estilo: { marginBottom: "10px" } }, [["abierto", "Abiertos"], ["respondido", "Respondidos"], ["cerrado", "Cerrados"], ["todos", "Todos"]].map(([k, t]) => h("a.boton.chico" + (k === estado ? ".primario" : ""), { href: `#/admin/tickets?estado=${k}` }, t))),
-    h("div.dividido", h("div.tarjeta.lista", d.tickets.length ? h("ul.lista-limpia", d.tickets.map((t) => h("li", { clase: String(t.id) === id ? "seleccionado" : null },
-      h("a.elemento", { href: `#/admin/tickets/${t.id}?estado=${estado}&sin-subir=1` }, h("span.crece", h("span.titulo", `${t.codigo} · ${t.motivo}`), h("span.meta", `${fechaHora(t.actualizado)}${t.asignado ? " · " + t.asignado : ""}`), h("span.meta", { estilo: { display: "block" } }, t.ultimo)), insignia(t.estado))))) : vacio("No hay tickets aquí.")), det));
-  if (!id) return;
+    h("div.dividido" + (id ? ".con-detalle" : ""), h("div.tarjeta.lista", d.tickets.length ? h("ul.lista-limpia", d.tickets.map((t) => h("li", { clase: String(t.id) === id ? "seleccionado" : null },
+      h("a.elemento", { href: `#/admin/tickets/${t.id}?estado=${estado}&sin-subir=1` }, h("span.crece", h("span.titulo", `${t.codigo} · ${t.motivo}`), h("span.meta", `${fechaHora(t.actualizado)}${t.asignado ? " · " + t.asignado : ""}`), h("span.meta", { estilo: { display: "block" } }, t.ultimo)), insignia(t.estado))))) : vacio("No hay tickets aquí.")), columnaDetalle));
+  const listaTickets = caja.querySelector(".dividido .lista");
+  if (!id) { volverASeleccion("tickets", listaTickets); return; }
+  recordarSeleccion("tickets", id);
+  subirAlDetalle(columnaDetalle);
   const r = await panel(`/tickets/${id}`);
   const t = r.ticket;
   const plantillas = (await panel("/plantillas")).plantillas.filter((p) => p.ambito === "ticket");
@@ -33,4 +38,5 @@ export async function mostrar(caja, [id], params) {
     h("div.pila", { estilo: { marginTop: "14px" } }, h("div.fila", sel, asignado), texto,
       h("div.fila", h("button.boton.primario", { type: "button", onclick: () => enviar(null) }, "Responder"), h("button.boton", { type: "button", onclick: () => enviar("cerrado") }, "Responder y cerrar"),
         t.estado === "cerrado" ? h("button.boton.fantasma", { type: "button", onclick: () => enviar("abierto") }, "Reabrir") : h("button.boton.fantasma", { type: "button", onclick: () => { texto.value = ""; enviar("cerrado"); } }, "Cerrar sin responder")))));
+  subirAlDetalle(columnaDetalle); // otra vez cuando ya cargó
 }

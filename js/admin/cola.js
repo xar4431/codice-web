@@ -1,6 +1,6 @@
 // Cola de reportes y revisión rápida (lista a la izquierda, detalle a la derecha).
 import { panel, blobUrl, obtenerCatalogos } from "../api.js";
-import { h, vaciar, insignia, fecha, fechaHora, toast, dialogo, campo, seleccion, cargando, vacio, NIVELES, pestanas, bytes } from "../ui.js";
+import { h, vaciar, insignia, fecha, fechaHora, toast, dialogo, campo, seleccion, cargando, vacio, NIVELES, pestanas, bytes, recordarSeleccion, subirAlDetalle, volverASeleccion } from "../ui.js";
 import { conDeshacer, puede } from "./panel.js";
 
 const ESTADOS = [["pendiente", "Pendientes"], ["cambios", "Esperan cambios"], ["aprobado", "Publicados"], ["rechazado", "Rechazados"], ["retirado", "Retirados"], ["duplicado", "Duplicados"]];
@@ -11,6 +11,9 @@ export async function mostrar(caja, [id], params) {
   const q = params.get("q") || "";
   const lista = h("div.tarjeta.lista");
   const detalle = h("div", id ? cargando() : vacio("Elige un reporte de la lista."));
+  // En el móvil el reporte abierto ocupa la pantalla; «Volver» regresa a la lista donde estabas.
+  const volver = id ? h("a.volver.volver-lista", { href: `#/admin/cola?estado=${estado}${q ? "&q=" + encodeURIComponent(q) : ""}&sin-subir=1` }, "← Volver a la lista de reportes") : null;
+  const columnaDetalle = h("div", volver, detalle);
   const seleccion = new Set();
   const buscar = h("input", { type: "search", placeholder: "Buscar en reportes…", value: q });
   buscar.addEventListener("change", () => { location.hash = `#/admin/cola?estado=${estado}&q=${encodeURIComponent(buscar.value)}`; });
@@ -18,7 +21,7 @@ export async function mostrar(caja, [id], params) {
   vaciar(caja, h("div.cabecera-pagina", h("div", h("h1", "Reportes"), h("p", "Ordenados por prioridad: primero lo que coincide con campañas activas."))),
     h("div.fila", { estilo: { marginBottom: "10px" } }, ESTADOS.map(([k, t]) => h("a.boton.chico" + (k === estado ? ".primario" : ""), { href: `#/admin/cola?estado=${k}` }, t)),
       h("a.boton.chico" + (params.get("prioridad") ? ".primario" : ""), { href: "#/admin/cola?prioridad=alta" }, "Urgentes")),
-    h("div.dividido", h("div", h("div.campo", buscar), lote, lista), detalle));
+    h("div.dividido" + (id ? ".con-detalle" : ""), h("div", h("div.campo", buscar), lote, lista), columnaDetalle));
   const extra = params.get("prioridad") ? "&prioridad=alta" : "";
   const d = await panel(`/reportes?estado=${estado}&q=${encodeURIComponent(q)}${extra}`);
   const pintarLote = () => {
@@ -43,7 +46,12 @@ export async function mostrar(caja, [id], params) {
       r.prioridad >= 60 ? insignia("urgente", "rojo") : r.campana_id ? insignia("campaña", "ambar") : null,
       r.fuente ? insignia("fuente pública", "azul") : null));
   })) : vacio("No hay reportes aquí."), d.total > 50 ? h("p.tenue", `Mostrando 50 de ${d.total}.`) : null);
-  if (id) await pintarDetalle(detalle, Number(id), estado);
+  if (id) {
+    recordarSeleccion("cola", id);
+    subirAlDetalle(columnaDetalle);
+    await pintarDetalle(detalle, Number(id), estado);
+    subirAlDetalle(columnaDetalle); // otra vez cuando ya cargó: la página ya es lo bastante alta
+  } else volverASeleccion("cola", lista);
 }
 
 async function elegirMensaje(titulo, ambito = "reporte", obligatorio = true) {

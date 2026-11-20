@@ -131,6 +131,24 @@ export function bytes(n) {
   if (n == null) return "—"; const u = ["B", "KB", "MB", "GB", "TB"]; let i = 0; let v = Number(n);
   while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; } return `${v.toFixed(v < 10 && i ? 1 : 0)} ${u[i]}`;
 }
+// Pantallas «lista + detalle» en el móvil: el detalle se ve solo y arriba; al volver, la lista regresa al elemento abierto.
+const esMovil = () => matchMedia("(max-width: 980px)").matches;
+export function recordarSeleccion(clave, id) { try { sessionStorage.setItem("codice.sel." + clave, String(id)); } catch (e) { /* sin almacenamiento */ } }
+export function subirAlDetalle(el) {
+  if (!esMovil()) return;
+  requestAnimationFrame(() => window.scrollTo(0, Math.max(0, el.getBoundingClientRect().top + window.scrollY - 76)));
+}
+export function volverASeleccion(clave, lista) {
+  if (!esMovil()) return;
+  let id = null;
+  try { id = sessionStorage.getItem("codice.sel." + clave); } catch (e) { /* sin almacenamiento */ }
+  const enlace = id && [...lista.querySelectorAll("a[href]")].find((a) => new RegExp(`/${id}(\\?|$)`).test(a.getAttribute("href")));
+  if (!enlace) return;
+  const li = enlace.closest("li");
+  li.classList.add("seleccionado"); // marca el último que leíste
+  requestAnimationFrame(() => li.scrollIntoView({ block: "center" }));
+}
+
 export function insignia(texto, clase = "") { return h("span.insignia" + (clase ? "." + clase : ""), texto); }
 
 export const NIVELES = { fuerte: "Relación fuerte", intermedia: "Relación intermedia", debil: "Relación débil", ninguna: "Sin relación" };
