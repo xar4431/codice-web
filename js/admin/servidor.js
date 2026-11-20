@@ -102,10 +102,10 @@ const SECCIONES = {
       h("section.tarjeta", h("h2", "Orígenes bloqueados"), h("p.tenue", "Bloqueos cortos: en Cuba muchas personas comparten conexión."), d.bloqueos.length ? h("ul.lista-limpia", d.bloqueos.map((b) => h("li.elemento",
         h("span.crece", h("span.titulo.mono", b.origen.slice(0, 10) + "…"), h("span.meta", `${b.motivo} · hasta ${fechaHora(b.hasta)}`)),
         h("button.boton.chico", { type: "button", onclick: async () => { await panel("/servidor/desbloquear", { metodo: "POST", datos: { origen: b.origen } }); toast("Desbloqueado.", "ok"); SECCIONES.seguridad(c); } }, "Desbloquear")))) : h("p.tenue", "Ninguno ahora.")),
-      h("section.tarjeta", h("h2", "Intentos de acceso fallidos (24 h)"), d.fallos_por_hora.length ? h("div.linea-tiempo", { estilo: { height: "80px" } }, d.fallos_por_hora.map((f) => h("div.barra", { title: `${fechaHora(f.hora)}: ${f.intentos}`, estilo: { height: `${Math.min(100, f.intentos * 5)}%`, background: "var(--ambar)" } }))) : h("p.tenue", "Ninguno.")),
+      h("section.tarjeta", h("h2", "Intentos de acceso fallidos (24 h)"), intentosPorHora(d.fallos_por_hora)),
       h("section.tarjeta", h("h2", "Antivirus y cortafuegos"), h("p", "Antivirus: ", d.antivirus?.activo ? insignia("activo", "verde") : insignia("sin datos")), d.antivirus?.firmas ? h("p.tenue", `Firmas: ${d.antivirus.firmas}`) : null,
-        h("p", "Cortafuegos: ", d.cortafuegos ? insignia(d.cortafuegos, d.cortafuegos === "activo" ? "verde" : "rojo") : insignia("sin datos")))),
-      h("section.tarjeta", h("h2", "Alertas"), d.alertas.length ? h("ul.lista-limpia", d.alertas.map((a) => h("li.elemento.pequeno", h("span.punto." + (a.nivel === "grave" ? "rojo" : a.nivel === "aviso" ? "ambar" : "")), h("span.crece", a.mensaje), h("span.tenue", fechaHora(a.fecha))))) : vacio("Sin alertas.")));
+        h("p", "Cortafuegos: ", d.cortafuegos ? insignia(d.cortafuegos, d.cortafuegos === "activo" ? "verde" : "rojo") : insignia("sin datos"))),
+      h("section.tarjeta", h("h2", "Alertas"), d.alertas.length ? h("ul.lista-limpia", d.alertas.map((a) => h("li.elemento.pequeno", h("span.punto." + (a.nivel === "grave" ? "rojo" : a.nivel === "aviso" ? "ambar" : "")), h("span.crece", a.mensaje), h("span.tenue", fechaHora(a.fecha))))) : vacio("Sin alertas."))));
   },
   async registros(c, params) {
     const fuente = params.get("fuente") || "api";
@@ -121,4 +121,18 @@ const SECCIONES = {
 async function abrir(ruta) {
   try { window.open(await blobUrl(`/api/panel/servidor/archivo?ruta=${encodeURIComponent(ruta)}`), "_blank", "noopener"); }
   catch (e) { toast(e.message, "error"); }
+}
+
+// Una barra por hora con su número encima (en el móvil no hay «pasar el ratón») y un resumen debajo.
+function intentosPorHora(filas) {
+  if (!filas.length) return h("p.tenue", "Ninguno.");
+  const max = Math.max(...filas.map((f) => f.intentos));
+  const total = filas.reduce((n, f) => n + f.intentos, 0);
+  const pico = filas.find((f) => f.intentos === max);
+  return [
+    h("div.linea-tiempo.con-valores", { estilo: { height: "90px" } }, filas.map((f) => h("div.barra", {
+      title: `${fechaHora(f.hora)}: ${f.intentos}`, estilo: { height: `${Math.max(6, (f.intentos / max) * 100)}%`, background: "var(--ambar)" } },
+      h("b.valor", String(f.intentos))))),
+    h("p.tenue.mini", { estilo: { marginTop: "10px" } }, `${total} en total. Cada barra es una hora; la más alta: ${max} a las ${fechaHora(pico.hora)}.`),
+  ];
 }
