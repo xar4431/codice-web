@@ -44,18 +44,18 @@ const SECCIONES = {
         h("div.medidor", { estilo: { height: "22px" } }, d.categorias.map((x, i) => h("div", { title: `${x.titulo}: ${bytes(x.bytes)}`, estilo: { width: `${(x.bytes / total) * 100}%`, background: COLORES[i % COLORES.length] } }))),
         h("ul.lista-limpia", { estilo: { marginTop: "12px" } }, d.categorias.map((x, i) => h("li.elemento", h("span.punto", { estilo: { background: COLORES[i % COLORES.length] } }), h("span.crece", x.titulo), h("strong", bytes(x.bytes))))),
         h("p.tenue", `Libre: ${bytes(d.disco.libre)} · ${d.reportes} reportes en total.`)),
-      h("section.tarjeta", h("h2", "Crecimiento mensual de pruebas"), d.crecimiento.length ? h("table.tabla", h("thead", h("tr", h("th", "Mes"), h("th", "Archivos"), h("th", "Tamaño"))),
-        h("tbody", d.crecimiento.map((m) => h("tr", h("td", m.mes), h("td", String(m.archivos)), h("td", bytes(m.bytes)))))) : vacio("Aún no hay pruebas.")));
+      h("section.tarjeta", h("h2", "Crecimiento mensual de pruebas"), d.crecimiento.length ? h("div.desplazable", h("table.tabla", h("thead", h("tr", h("th", "Mes"), h("th", "Archivos"), h("th", "Tamaño"))),
+        h("tbody", d.crecimiento.map((m) => h("tr", h("td", m.mes), h("td", String(m.archivos)), h("td", bytes(m.bytes))))))) : vacio("Aún no hay pruebas.")));
   },
   async explorador(c, params) {
     const ruta = params.get("ruta") || "";
     const d = await panel("/servidor/explorador?ruta=" + encodeURIComponent(ruta));
     vaciar(c, h("section.tarjeta", h("p.mono", "/almacen/" + d.ruta), h("p.tenue", "Ver y abrir, nunca borrar a mano: para liberar espacio usa Limpieza."),
       d.padre !== null && d.ruta ? h("a.boton.chico", { href: `#/admin/servidor/explorador?ruta=${encodeURIComponent(d.padre || "")}` }, "↑ Subir") : null,
-      d.entradas.length ? h("table.tabla", h("thead", h("tr", h("th", "Nombre"), h("th", "Tamaño"), h("th", "Modificado"), h("th", "Reporte"))),
+      d.entradas.length ? h("div.desplazable", h("table.tabla", h("thead", h("tr", h("th", "Nombre"), h("th", "Tamaño"), h("th", "Modificado"), h("th", "Reporte"))),
         h("tbody", d.entradas.map((e) => h("tr",
           h("td", e.carpeta ? h("a", { href: `#/admin/servidor/explorador?ruta=${encodeURIComponent(e.ruta)}` }, "📁 " + e.nombre) : h("button.boton.chico.fantasma", { type: "button", onclick: () => abrir(e.ruta) }, e.nombre)),
-          h("td", bytes(e.bytes)), h("td.tenue", fechaHora(e.modificado)), h("td", e.reporte ? h("a", { href: `#/admin/cola/${e.reporte.id}` }, e.reporte.codigo) : "—"))))) : vacio("Carpeta vacía.")));
+          h("td", bytes(e.bytes)), h("td.tenue", fechaHora(e.modificado)), h("td", e.reporte ? h("a", { href: `#/admin/cola/${e.reporte.id}` }, e.reporte.codigo) : "—")))))) : vacio("Carpeta vacía.")));
   },
   async limpieza(c) {
     const d = await panel("/servidor/limpieza");
@@ -80,8 +80,8 @@ const SECCIONES = {
       d.comprobado ? h("p.tenue", `Última comprobación de integridad: ${fechaHora(d.comprobado)}`) : null,
       h("button.boton.primario", { type: "button", onclick: async () => { try { const r = await panel("/servidor/respaldo", { metodo: "POST" }); toast(r.mensaje, "ok"); SECCIONES.respaldos(c); } catch (e) { toast(e.message, "error"); } } }, "Hacer un respaldo ahora"),
       h("p.aviso", { estilo: { marginTop: "12px" } }, "🔒 ", d.nota)),
-      h("section.tarjeta", h("h2", "Copias guardadas"), d.instantaneas.length ? h("table.tabla", h("thead", h("tr", h("th", "Fecha"), h("th", "Id"), h("th", "Tamaño añadido"))),
-        h("tbody", d.instantaneas.slice().reverse().map((s) => h("tr", h("td", fechaHora(s.fecha)), h("td.mono", s.id), h("td", bytes(s.bytes)))))) : vacio("Todavía no hay copias.")),
+      h("section.tarjeta", h("h2", "Copias guardadas"), d.instantaneas.length ? h("div.desplazable", h("table.tabla", h("thead", h("tr", h("th", "Fecha"), h("th", "Id"), h("th", "Tamaño añadido"))),
+        h("tbody", d.instantaneas.slice().reverse().map((s) => h("tr", h("td", fechaHora(s.fecha)), h("td.mono", s.id), h("td", bytes(s.bytes))))))) : vacio("Todavía no hay copias.")),
       h("section.tarjeta", h("h2", "Tareas recientes"), d.tareas.length ? h("ul.lista-limpia", d.tareas.map((t) => h("li.elemento.pequeno", h("span.crece", `${t.tipo} · ${t.resultado || ""}`), insignia(t.estado, t.estado === "hecha" ? "verde" : t.estado === "fallida" ? "rojo" : "azul"), h("span.tenue", fechaHora(t.pedida))))) : vacio("Sin tareas.")));
   },
   async red(c) {
