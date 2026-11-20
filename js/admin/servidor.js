@@ -3,6 +3,7 @@ import { panel, blobUrl } from "../api.js";
 import { h, vaciar, insignia, bytes, fechaHora, hace, toast, cargando, vacio, confirmar } from "../ui.js";
 import { pedirCodigo2fa } from "./panel.js";
 
+const E = "?e=" + ((window.CODICE_CONFIG || {}).edicion || "");
 const TABS = [["resumen", "Resumen"], ["almacenamiento", "Almacenamiento"], ["explorador", "Explorador"], ["limpieza", "Limpieza"], ["respaldos", "Respaldos"], ["red", "Red"], ["seguridad", "Seguridad"], ["registros", "Registros"]];
 const COLORES = ["var(--azul)", "var(--violeta)", "var(--ambar)", "var(--verde)", "var(--rojo)", "var(--tenue)"];
 
@@ -95,17 +96,9 @@ const SECCIONES = {
       h("section.tarjeta", h("h2", "Túnel"), h("p", d.tunel?.activo ? insignia("activo", "verde") : insignia("sin datos", "rojo")), d.tunel?.direccion ? h("p.mono.pequeno", d.tunel.direccion) : null, d.tunel?.detalle ? h("p.tenue", d.tunel.detalle) : null),
       h("section.tarjeta", h("h2", "Cortes de Internet"), d.cortes?.length ? h("ul.lista-limpia", d.cortes.map((x) => h("li.elemento.pequeno", h("span.crece", `${fechaHora(x.desde)} → ${x.hasta ? fechaHora(x.hasta) : "ahora"}`)))) : h("p.tenue", "Sin cortes registrados."))));
   },
-  async seguridad(c) {
-    const d = await panel("/servidor/seguridad");
-    await panel("/alertas/vistas", { metodo: "POST" }).catch(() => {});
-    vaciar(c, h("div.rejilla",
-      h("section.tarjeta", h("h2", "Orígenes bloqueados"), h("p.tenue", "Bloqueos cortos: en Cuba muchas personas comparten conexión."), d.bloqueos.length ? h("ul.lista-limpia", d.bloqueos.map((b) => h("li.elemento",
-        h("span.crece", h("span.titulo.mono", b.origen.slice(0, 10) + "…"), h("span.meta", `${b.motivo} · hasta ${fechaHora(b.hasta)}`)),
-        h("button.boton.chico", { type: "button", onclick: async () => { await panel("/servidor/desbloquear", { metodo: "POST", datos: { origen: b.origen } }); toast("Desbloqueado.", "ok"); SECCIONES.seguridad(c); } }, "Desbloquear")))) : h("p.tenue", "Ninguno ahora.")),
-      h("section.tarjeta", h("h2", "Intentos de acceso fallidos (24 h)"), intentosPorHora(d.fallos_por_hora)),
-      h("section.tarjeta", h("h2", "Antivirus y cortafuegos"), h("p", "Antivirus: ", d.antivirus?.activo ? insignia("activo", "verde") : insignia("sin datos")), d.antivirus?.firmas ? h("p.tenue", `Firmas: ${d.antivirus.firmas}`) : null,
-        h("p", "Cortafuegos: ", d.cortafuegos ? insignia(d.cortafuegos, d.cortafuegos === "activo" ? "verde" : "rojo") : insignia("sin datos"))),
-      h("section.tarjeta", h("h2", "Alertas"), d.alertas.length ? h("ul.lista-limpia", d.alertas.map((a) => h("li.elemento.pequeno", h("span.punto." + (a.nivel === "grave" ? "rojo" : a.nivel === "aviso" ? "ambar" : "")), h("span.crece", a.mensaje), h("span.tenue", fechaHora(a.fecha))))) : vacio("Sin alertas."))));
+  async seguridad(c, params) {
+    const m = await import("./seguridad.js" + E);
+    await m.mostrar(c, params);
   },
   async registros(c, params) {
     const fuente = params.get("fuente") || "api";
@@ -121,18 +114,4 @@ const SECCIONES = {
 async function abrir(ruta) {
   try { window.open(await blobUrl(`/api/panel/servidor/archivo?ruta=${encodeURIComponent(ruta)}`), "_blank", "noopener"); }
   catch (e) { toast(e.message, "error"); }
-}
-
-// Una barra por hora con su número encima (en el móvil no hay «pasar el ratón») y un resumen debajo.
-function intentosPorHora(filas) {
-  if (!filas.length) return h("p.tenue", "Ninguno.");
-  const max = Math.max(...filas.map((f) => f.intentos));
-  const total = filas.reduce((n, f) => n + f.intentos, 0);
-  const pico = filas.find((f) => f.intentos === max);
-  return [
-    h("div.linea-tiempo.con-valores", { estilo: { height: "90px" } }, filas.map((f) => h("div.barra", {
-      title: `${fechaHora(f.hora)}: ${f.intentos}`, estilo: { height: `${Math.max(6, (f.intentos / max) * 100)}%`, background: "var(--ambar)" } },
-      h("b.valor", String(f.intentos))))),
-    h("p.tenue.mini", { estilo: { marginTop: "10px" } }, `${total} en total. Cada barra es una hora; la más alta: ${max} a las ${fechaHora(pico.hora)}.`),
-  ];
 }

@@ -16,11 +16,12 @@ const SECCIONES = {
   avisos: ["Avisos", () => import("./avisos.js" + E)],
   papelera: ["Papelera", () => import("./papelera.js" + E), "retirar"],
   historial: ["Historial", () => import("./historial.js" + E)],
+  metricas: ["Métricas", () => import("./metricas.js" + E), "servidor"],
   servidor: ["Servidor", () => import("./servidor.js" + E), "servidor"],
   ajustes: ["Ajustes", () => import("./ajustes.js" + E), "admin"],
 };
 const GRUPOS = [["Trabajo diario", ["", "cola", "importar", "campanas", "investigacion"]], ["Comunidad", ["tickets", "solicitudes", "usuarios", "avisos"]],
-  ["Control", ["papelera", "historial", "servidor", "ajustes"]]];
+  ["Control", ["papelera", "historial", "metricas", "servidor", "ajustes"]]];
 
 export let yo = null;
 let inactividad;
