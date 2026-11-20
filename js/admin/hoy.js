@@ -1,11 +1,10 @@
 import { panel } from "../api.js";
 import { h, vaciar, fechaHora } from "../ui.js";
-import { yo } from "./panel.js";
 
 export async function mostrar(caja) {
   const d = await panel("/hoy");
   const c = d.contadores;
-  vaciar(caja, h("div.cabecera-pagina", h("div", h("h1", "Tareas"), h("p", `Hola, ${yo.usuario}. Lo urgente primero.`))),
+  vaciar(caja, h("div.cabecera-pagina", h("div", h("h1", "Tareas"), h("p", "Resumen de pendientes y alertas, ordenado por prioridad."))),
     h("div.cifras", { estilo: { gridTemplateColumns: "repeat(auto-fit, minmax(140px, 1fr))", marginBottom: "16px" } },
       cifra(c.pendientes, "por revisar", "#/admin/cola"), cifra(c.urgentes, "urgentes", "#/admin/cola?prioridad=alta"), cifra(c.tickets, "tickets abiertos", "#/admin/tickets"),
       cifra(d.sugerencias, "sugerencias de campaña", "#/admin/campanas?vista=sugerencias"), cifra(c.aprobados_hoy, "publicados en 24 h", "#/admin/cola?estado=aprobado")),
