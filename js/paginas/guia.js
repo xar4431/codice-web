@@ -5,8 +5,8 @@ const S = (titulo, ...cuerpo) => h("section.tarjeta", h("h2", titulo), ...cuerpo
 const R = (archivo, ancho, alto, alt) => h("img.recorte", { src: `img/guia/${archivo}.webp`, width: ancho, height: alto, alt, loading: "lazy", decoding: "async" });
 
 export function mostrar(main) {
-  vaciar(main, h("div.cabecera-pagina", h("div", h("h1", "Guía de CODICE"), h("p", "Cómo usar la web, cómo reportar y qué significan los colores."))),
-    h("div.pila", { estilo: { maxWidth: "820px" } },
+  vaciar(main, h("div.columna", h("div.cabecera-pagina", h("div", h("h1", "Guía de CODICE"), h("p", "Cómo usar la web, cómo reportar y qué significan los colores."))),
+    h("div.pila",
       S("Señales de estafa más comunes", h("ul",
         h("li", "Te piden pagar ", h("strong", "por adelantado"), " a una tarjeta personal o por Transfermóvil."),
         h("li", "Te piden un ", h("strong", "código de verificación"), " que te llegó por SMS (así roban tu WhatsApp o tu cuenta)."),
@@ -42,5 +42,5 @@ export function mostrar(main) {
         h("p", insignia("Estafa confirmada (activa)", "ver-confirmada"), " ", insignia("En investigación", "ver-investigacion"), " ", insignia("Resuelta", "ver-resuelta"), " ", insignia("Descartada", "ver-descartada")),
         h("p.suave", "CODICE conecta datos (indicadores), no acusa a personas: un número o una tarjeta puede ser de alguien a quien se la robaron o prestaron.")),
       S("Dirección oficial", h("p", "La única dirección oficial es ", h("strong", "codicecuba.org"), ". Si ves una copia de esta web en otra dirección, es falsa: repórtala."),
-        h("p", "CODICE no tiene WhatsApp, Telegram ni correo de contacto. Todo se hace dentro de la web."))));
+        h("p", "CODICE no tiene WhatsApp, Telegram ni correo de contacto. Todo se hace dentro de la web.")))));
 }
