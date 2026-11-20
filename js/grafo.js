@@ -1,12 +1,16 @@
 // Grafo interactivo sin librerías: disposición por fuerzas, arrastrar, acercar y tocar nodos.
 const NS = "http://www.w3.org/2000/svg";
-const COLOR_ARISTA = { fuerte: "#F04438", intermedia: "#F0A020", debil: "#3FB950", indicador: "#3B4A66", ninguna: "#3B4A66" };
-const COLOR_NODO = { reporte: "#38BDF8", caso: "#38BDF8", telefono: "#F0A020", referencia_pago: "#F04438", url: "#A78BFA",
-  dominio: "#A78BFA", perfil: "#3FB950", correo: "#FDE68A", otro: "#9AA6BF", indicador: "#F0A020" };
+// Los colores salen de las variables de la hoja de estilos, así el grafo cambia solo con el modo claro u oscuro.
+const COLOR_ARISTA = { fuerte: "var(--rojo)", intermedia: "var(--ambar)", debil: "var(--verde)", indicador: "var(--grafo-neutro)", ninguna: "var(--grafo-neutro)" };
+const COLOR_NODO = { reporte: "var(--azul)", caso: "var(--azul)", telefono: "var(--ambar)", referencia_pago: "var(--rojo)", url: "var(--violeta)",
+  dominio: "var(--violeta)", perfil: "var(--verde)", correo: "var(--amarillo)", otro: "var(--suave)", indicador: "var(--ambar)" };
 
 function el(tag, attrs = {}) {
   const e = document.createElementNS(NS, tag);
-  for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "fill" || k === "stroke") e.style[k] = v; // como estilo: así acepta var(--…)
+    else e.setAttribute(k, v);
+  }
   return e;
 }
 
@@ -49,7 +53,7 @@ export function dibujarGrafo(svg, { nodos, aristas }, { alTocar, etiquetas = tru
     }
   }
   const lineas = lados.map((l) => {
-    const ln = el("line", { stroke: COLOR_ARISTA[l.nivel] || "#3B4A66", "stroke-width": l.nivel === "fuerte" ? 3 : l.nivel === "indicador" ? 1.2 : 2,
+    const ln = el("line", { stroke: COLOR_ARISTA[l.nivel] || COLOR_ARISTA.ninguna, "stroke-width": l.nivel === "fuerte" ? 3 : l.nivel === "indicador" ? 1.2 : 2,
       "stroke-dasharray": l.estado === "sugerida" && l.nivel !== "indicador" ? "6 4" : "" });
     capa.append(ln);
     return [ln, l];
@@ -58,11 +62,11 @@ export function dibujarGrafo(svg, { nodos, aristas }, { alTocar, etiquetas = tru
     const g = el("g", { tabindex: 0, role: "button", "aria-label": `${n.etiqueta}` });
     g.style.cursor = "pointer";
     const esCaso = n.clase === "reporte" || n.tipo === "caso";
-    const forma = esCaso ? el("circle", { r: 9, fill: n.estado && n.estado !== "aprobado" ? "#172033" : COLOR_NODO.reporte, stroke: COLOR_NODO.reporte, "stroke-width": 2.5 })
+    const forma = esCaso ? el("circle", { r: 9, fill: n.estado && n.estado !== "aprobado" ? "var(--grafo-vacio)" : COLOR_NODO.reporte, stroke: COLOR_NODO.reporte, "stroke-width": 2.5 })
       : el("rect", { x: -8, y: -8, width: 16, height: 16, rx: 3, transform: "rotate(45)", fill: COLOR_NODO[n.tipo] || COLOR_NODO.otro });
     g.append(forma);
     if (etiquetas) {
-      const t = el("text", { y: 24, "text-anchor": "middle", fill: "#C9D2E3", "font-size": 11, "font-family": "ui-monospace, monospace" });
+      const t = el("text", { y: 24, "text-anchor": "middle", fill: "var(--grafo-texto)", "font-size": 11, "font-family": "ui-monospace, monospace" });
       t.textContent = String(n.etiqueta).slice(0, 26);
       g.append(t);
     }

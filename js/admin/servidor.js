@@ -4,7 +4,7 @@ import { h, vaciar, insignia, bytes, fechaHora, hace, toast, cargando, vacio, co
 import { pedirCodigo2fa } from "./panel.js";
 
 const TABS = [["resumen", "Resumen"], ["almacenamiento", "Almacenamiento"], ["explorador", "Explorador"], ["limpieza", "Limpieza"], ["respaldos", "Respaldos"], ["red", "Red"], ["seguridad", "Seguridad"], ["registros", "Registros"]];
-const COLORES = ["#38BDF8", "#A78BFA", "#F0A020", "#3FB950", "#F04438", "#6B7790"];
+const COLORES = ["var(--azul)", "var(--violeta)", "var(--ambar)", "var(--verde)", "var(--rojo)", "var(--tenue)"];
 
 export async function mostrar(caja, [tab = "resumen"], params) {
   const cuerpo = h("div", cargando());
@@ -15,7 +15,7 @@ export async function mostrar(caja, [tab = "resumen"], params) {
 }
 
 const estadoServicio = (e) => insignia(e === "active" ? "funcionando" : e === "inactive" ? "detenido" : e === "failed" ? "con fallo" : e, e === "active" ? "verde" : e === "failed" ? "rojo" : "");
-const barra = (pct, color) => h("div.medidor", h("div", { estilo: { width: `${Math.min(100, pct || 0)}%`, background: color || (pct > 85 ? "#F04438" : pct > 70 ? "#F0A020" : "#3FB950") } }));
+const barra = (pct, color) => h("div.medidor", h("div", { estilo: { width: `${Math.min(100, pct || 0)}%`, background: color || (pct > 85 ? "var(--rojo)" : pct > 70 ? "var(--ambar)" : "var(--verde)") } }));
 
 const SECCIONES = {
   async resumen(c) {
@@ -88,7 +88,7 @@ const SECCIONES = {
     const max = Math.max(50, ...hist.map((x) => x.ms || 0));
     vaciar(c, h("div.rejilla",
       h("section.tarjeta", h("h2", "Latencia"), h("p.grande", `${d.latencia_ms ?? "—"} ms`), h("p", "Internet: ", d.internet === false ? insignia("sin conexión", "rojo") : insignia("conectado", "verde")),
-        hist.length ? h("div.linea-tiempo", { estilo: { height: "80px" } }, hist.map((x) => h("div.barra", { title: `${fechaHora(x.fecha)}: ${x.ms ?? "sin red"} ms`, estilo: { height: `${((x.ms || max) / max) * 100}%`, background: x.ms == null ? "#F04438" : "#38BDF8" } }))) : null),
+        hist.length ? h("div.linea-tiempo", { estilo: { height: "80px" } }, hist.map((x) => h("div.barra", { title: `${fechaHora(x.fecha)}: ${x.ms ?? "sin red"} ms`, estilo: { height: `${((x.ms || max) / max) * 100}%`, background: x.ms == null ? "var(--rojo)" : "var(--azul)" } }))) : null),
       h("section.tarjeta", h("h2", "Tráfico"), h("p", `Hoy: ↓ ${bytes(d.trafico?.hoy_rx)} · ↑ ${bytes(d.trafico?.hoy_tx)}`), h("p", `Este mes: ↓ ${bytes(d.trafico?.mes_rx)} · ↑ ${bytes(d.trafico?.mes_tx)}`), h("p.tenue", d.trafico?.fuente || "")),
       h("section.tarjeta", h("h2", "Túnel"), h("p", d.tunel?.activo ? insignia("activo", "verde") : insignia("sin datos", "rojo")), d.tunel?.direccion ? h("p.mono.pequeno", d.tunel.direccion) : null, d.tunel?.detalle ? h("p.tenue", d.tunel.detalle) : null),
       h("section.tarjeta", h("h2", "Cortes de Internet"), d.cortes?.length ? h("ul.lista-limpia", d.cortes.map((x) => h("li.elemento.pequeno", h("span.crece", `${fechaHora(x.desde)} → ${x.hasta ? fechaHora(x.hasta) : "ahora"}`)))) : h("p.tenue", "Sin cortes registrados."))));
@@ -100,7 +100,7 @@ const SECCIONES = {
       h("section.tarjeta", h("h2", "Orígenes bloqueados"), h("p.tenue", "Bloqueos cortos: en Cuba muchas personas comparten conexión."), d.bloqueos.length ? h("ul.lista-limpia", d.bloqueos.map((b) => h("li.elemento",
         h("span.crece", h("span.titulo.mono", b.origen.slice(0, 10) + "…"), h("span.meta", `${b.motivo} · hasta ${fechaHora(b.hasta)}`)),
         h("button.boton.chico", { type: "button", onclick: async () => { await panel("/servidor/desbloquear", { metodo: "POST", datos: { origen: b.origen } }); toast("Desbloqueado.", "ok"); SECCIONES.seguridad(c); } }, "Desbloquear")))) : h("p.tenue", "Ninguno ahora.")),
-      h("section.tarjeta", h("h2", "Intentos de acceso fallidos (24 h)"), d.fallos_por_hora.length ? h("div.linea-tiempo", { estilo: { height: "80px" } }, d.fallos_por_hora.map((f) => h("div.barra", { title: `${fechaHora(f.hora)}: ${f.intentos}`, estilo: { height: `${Math.min(100, f.intentos * 5)}%`, background: "#F0A020" } }))) : h("p.tenue", "Ninguno.")),
+      h("section.tarjeta", h("h2", "Intentos de acceso fallidos (24 h)"), d.fallos_por_hora.length ? h("div.linea-tiempo", { estilo: { height: "80px" } }, d.fallos_por_hora.map((f) => h("div.barra", { title: `${fechaHora(f.hora)}: ${f.intentos}`, estilo: { height: `${Math.min(100, f.intentos * 5)}%`, background: "var(--ambar)" } }))) : h("p.tenue", "Ninguno.")),
       h("section.tarjeta", h("h2", "Antivirus y cortafuegos"), h("p", "Antivirus: ", d.antivirus?.activo ? insignia("activo", "verde") : insignia("sin datos")), d.antivirus?.firmas ? h("p.tenue", `Firmas: ${d.antivirus.firmas}`) : null,
         h("p", "Cortafuegos: ", d.cortafuegos ? insignia(d.cortafuegos, d.cortafuegos === "activo" ? "verde" : "rojo") : insignia("sin datos")))),
       h("section.tarjeta", h("h2", "Alertas"), d.alertas.length ? h("ul.lista-limpia", d.alertas.map((a) => h("li.elemento.pequeno", h("span.punto." + (a.nivel === "grave" ? "rojo" : a.nivel === "aviso" ? "ambar" : "")), h("span.crece", a.mensaje), h("span.tenue", fechaHora(a.fecha))))) : vacio("Sin alertas.")));
