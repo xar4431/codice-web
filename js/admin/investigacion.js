@@ -25,8 +25,8 @@ export async function mostrar(caja, _p, params) {
     control = dibujarGrafo(svg, g, { alTocar: (n) => (n.clase === "reporte" ? fichaReporte(ficha, n) : fichaIndicador(ficha, n.clave, n, (c) => { centro = c; cargar(); })) });
   };
   vaciar(caja, h("div.cabecera-pagina", h("div", h("h1", "Investigación"), h("p", "Ata cabos: casos (●) unidos por datos compartidos (◆) y relaciones calculadas."))),
-    h("div.tarjeta", h("div.fila", { estilo: { alignItems: "flex-end" } },
-      h("div", campo("Desde", desde)), h("div", campo("Hasta", hasta)), h("div", campo("Ampliar", prof)),
+    h("div.tarjeta", h("div.filtros", h("div", campo("Desde", desde)), h("div", campo("Hasta", hasta)), h("div", campo("Ampliar", prof))),
+      h("div.fila", { estilo: { alignItems: "flex-end" } },
       h("label.casilla", { estilo: { marginBottom: "14px" } }, conf, h("span", "Solo publicados")),
       h("button.boton.primario", { type: "button", onclick: cargar, estilo: { marginBottom: "14px" } }, "Aplicar"),
       h("button.boton.fantasma", { type: "button", onclick: () => { centro = ""; cargar(); }, estilo: { marginBottom: "14px" } }, "Ver todo"),
