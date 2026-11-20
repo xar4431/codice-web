@@ -12,22 +12,22 @@ export async function mostrar(main, [caso]) {
       pintar(res, r.reporte, { codigo: codigoActual }, consultar);
     } catch (e) { vaciar(res, h("div.aviso.error", { role: "alert" }, e.message)); }
   };
-  vaciar(main, h("div.cabecera-pagina", h("div", h("h1", "Seguimiento de mi reporte"), h("p", "Usa el código privado que recibiste al enviar el reporte."))),
-    h("div.tarjeta", { estilo: { maxWidth: "760px" } },
+  vaciar(main, h("div.columna", h("div.cabecera-pagina", h("div", h("h1", "Seguimiento de mi reporte"), h("p", "Usa el código privado que recibiste al enviar el reporte."))),
+    h("div.tarjeta",
       h("form", { onsubmit: (e) => { e.preventDefault(); consultar(); } }, campo("Código privado", cod), h("button.boton.primario", { type: "submit" }, "Ver estado")),
       sesion.usuario ? h("p.tenue", { estilo: { marginTop: "10px" } }, "¿Lo enviaste con tu cuenta? Lo tienes en ", h("a", { href: "#/cuenta" }, "Mi cuenta"), ".") : null),
-    res);
+    res));
   if (caso && sesion.usuario) {
     // Reporte propio desde «Mi cuenta»
     const yo = await pedir("/api/cuenta");
     const r = yo.cuenta.reportes.find((x) => x.codigo === caso);
-    if (r) vaciar(res, h("div.tarjeta", { estilo: { maxWidth: "760px", marginTop: "14px" } }, h("h2", r.codigo), insignia(r.estado_nombre, "estado-" + r.estado),
+    if (r) vaciar(res, h("div.tarjeta", { estilo: { marginTop: "14px" } }, h("h2", r.codigo), insignia(r.estado_nombre, "estado-" + r.estado),
       ["pendiente", "cambios"].includes(r.estado) ? formularioRespuesta({ caso }, () => location.reload()) : null));
   }
 }
 
 export function pintar(caja, r, acceso, recargar) {
-  vaciar(caja, h("div.tarjeta", { estilo: { maxWidth: "760px", marginTop: "14px" } },
+  vaciar(caja, h("div.tarjeta", { estilo: { marginTop: "14px" } },
     h("div.fila", { estilo: { justifyContent: "space-between" } }, h("h2", { estilo: { margin: 0 } }, r.codigo), insignia(r.estado_nombre, "estado-" + r.estado)),
     h("p.tenue", `${r.tipo} · enviado ${fechaHora(r.creado)} · ${r.pruebas} pruebas`),
     r.estado === "cambios" ? h("div.aviso.atencion", "Moderación necesita cambios: lee el mensaje y responde abajo.") : null,

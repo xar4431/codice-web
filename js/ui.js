@@ -132,7 +132,7 @@ export function bytes(n) {
   while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; } return `${v.toFixed(v < 10 && i ? 1 : 0)} ${u[i]}`;
 }
 // Pantallas «lista + detalle» en el móvil: el detalle se ve solo y arriba; al volver, la lista regresa al elemento abierto.
-const esMovil = () => matchMedia("(max-width: 980px)").matches;
+const esMovil = () => matchMedia("(max-width: 1200px)").matches; // móvil y portátil pequeño
 export function recordarSeleccion(clave, id) { try { sessionStorage.setItem("codice.sel." + clave, String(id)); } catch (e) { /* sin almacenamiento */ } }
 export function subirAlDetalle(el) {
   if (!esMovil()) return;

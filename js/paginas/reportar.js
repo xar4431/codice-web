@@ -184,10 +184,10 @@ export async function mostrar(main, _p, params) {
     } finally { siguiente.disabled = false; siguiente.removeAttribute("aria-busy"); siguiente.textContent = paso === pasos.length - 1 ? "Enviar reporte" : "Siguiente"; }
   });
 
-  vaciar(main, h("div.cabecera-pagina", h("div", h("h1", casoPadre ? "Me pasó también" : "Reportar una estafa"),
+  vaciar(main, h("div.columna", h("div.cabecera-pagina", h("div", h("h1", casoPadre ? "Me pasó también" : "Reportar una estafa"),
     h("p", casoPadre ? `Tu reporte se sumará al caso ${casoPadre} cuando moderación lo revise.` : "Unos minutos que pueden evitar que otra persona caiga."))),
     document.body.dataset.proteccion && !conCuenta ? h("div.aviso.atencion", "Ahora mismo hay muchos reportes falsos y solo se puede reportar con cuenta. ", h("a", { href: "#/cuenta" }, "Crea una en un minuto"), " (solo pide usuario y contraseña).") : null,
-    h("div.tarjeta", { estilo: { maxWidth: "760px" } }, form));
+    h("div.tarjeta", form)));
   ir(0);
 }
 
