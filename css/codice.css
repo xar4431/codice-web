@@ -287,6 +287,8 @@ a.elemento:hover { background: var(--capa2); border-radius: 10px; }
 .linea-tiempo { display: flex; align-items: flex-end; gap: 4px; height: 120px; padding-top: 8px; }
 .linea-tiempo { justify-content: center; }
 .linea-tiempo .barra { flex: 1; max-width: 56px; background: var(--primario); border-radius: 6px 6px 0 0; min-height: 4px; position: relative; }
+.linea-tiempo.con-valores { padding-top: 22px; }
+.linea-tiempo .barra .valor { position: absolute; top: -20px; left: 50%; transform: translateX(-50%); font: 600 .75rem var(--mono); color: var(--texto); }
 .linea-tiempo .barra span { position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%); font-size: .7rem; color: var(--tenue); white-space: nowrap; }
 .grafo { width: 100%; height: 420px; background: var(--entrada); border: 1px solid var(--borde); border-radius: 14px; display: block; touch-action: none; cursor: grab; }
 .grafo.alto { height: min(70vh, 640px); }
