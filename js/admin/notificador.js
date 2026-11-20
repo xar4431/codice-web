@@ -1,7 +1,7 @@
 // Avisos del panel con sonido: tareas nuevas (un «ding» suave), problemas del servidor (dos tonos graves)
 // y señales de ataque (pulsos urgentes). Los sonidos se crean en el navegador: no se descarga nada.
 import { panel } from "../api.js";
-import { h, vaciar, icono, dialogo } from "../ui.js";
+import { h, vaciar, icono, dialogo, toast, fechaHora, insignia } from "../ui.js";
 
 const CADA = 20000;
 const CLAVE = "codice.avisos";
@@ -210,13 +210,103 @@ async function abrirAjustes() {
   });
   const probar = (tipo, texto, etiqueta = "Probar") => h("button.boton.chico", { type: "button", onclick: () => { actualizar(); sonar(tipo, true); mostrarAviso(tipo, texto, { detalle: "Esto es una prueba." }); } }, etiqueta);
   const fila = (control, titulo, ayuda, boton) => h("div.ajuste-aviso", h("label.casilla", control, h("span", h("strong", titulo), h("br"), h("span.tenue", ayuda))), boton);
+  const seccionPush = h("div.pila.push-ajustes", h("p.tenue", "Cargando…"));
+  pintarPush(seccionPush);
   await dialogo("Avisos y sonidos", h("div.pila",
+    h("h3.subtitulo-aviso", "En el panel"),
     h("p.suave", "Mientras tengas el panel abierto, faro mira cada 20 segundos si hay algo nuevo."),
     fila(tareas, "Tareas nuevas", "Reportes, tickets y solicitudes. Suena un «ding» suave.", probar("tarea", "Reporte nuevo CDX-26-0042")),
     fila(alertas, "Alertas del servidor y de seguridad", "Errores del servidor: dos tonos graves. Señales de ataque: pulsos urgentes.",
       h("div.fila", probar("servidor", "El disco supera el 80 %.", "Probar servidor"), probar("ataque", "Intentos de inyección de código bloqueados.", "Probar ataque"))),
     h("label.campo", h("span", "Volumen"), volumen),
     fila(sistema, "Avisar también con la pestaña en segundo plano", "Usa los avisos del sistema del navegador.", null), estadoSistema,
-    h("p.tenue.mini", "Se guarda en este navegador. En el móvil, con la pantalla apagada, el navegador no deja sonar nada.")),
+    h("p.tenue.mini", "Se guarda en este navegador. En el móvil, con la pantalla apagada, el navegador no deja sonar nada."),
+    h("h3.subtitulo-aviso", "En el móvil, aunque el panel esté cerrado"),
+    seccionPush),
   { acciones: [{ texto: "Listo", valor: true, clase: "primario" }] });
+}
+
+// --- Avisos push: llegan al móvil o la PC aunque el panel esté cerrado ---------------------------------
+const esIOS = () => /iPhone|iPad|iPod/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+const instalada = () => window.matchMedia?.("(display-mode: standalone)").matches || navigator.standalone === true;
+const pushPosible = () => "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
+
+function nombreDispositivo() {
+  const ua = navigator.userAgent;
+  const so = /Android/.test(ua) ? "Android" : esIOS() ? (/iPad/.test(ua) ? "iPad" : "iPhone") : /Windows/.test(ua) ? "PC Windows" : /Mac/.test(ua) ? "Mac" : /Linux/.test(ua) ? "PC Linux" : "Dispositivo";
+  const nav = /Edg\//.test(ua) ? "Edge" : /SamsungBrowser/.test(ua) ? "Samsung Internet" : /Firefox|FxiOS/.test(ua) ? "Firefox" : /OPR\//.test(ua) ? "Opera" : /CriOS|Chrome/.test(ua) ? "Chrome" : /Safari/.test(ua) ? "Safari" : "navegador";
+  return `${so} · ${nav}`;
+}
+
+function bytesClave(b64) {
+  const s = atob(b64.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((b64.length + 3) % 4));
+  return Uint8Array.from(s, (c) => c.charCodeAt(0));
+}
+
+async function suscripcionLocal() {
+  if (!pushPosible()) return null;
+  const reg = await navigator.serviceWorker.getRegistration();
+  return reg ? reg.pushManager.getSubscription() : null;
+}
+
+async function activarPush() {
+  if (!pushPosible()) throw new Error(esIOS() ? "En iPhone primero añade CODICE a la pantalla de inicio (abajo te explico cómo)." : "Este navegador no permite avisos push. Prueba con Chrome.");
+  const permiso = await Notification.requestPermission();
+  if (permiso !== "granted") throw new Error("No diste permiso para avisos. Actívalo en los permisos del sitio del navegador y vuelve a intentarlo.");
+  const reg = await navigator.serviceWorker.register("sw.js");
+  await navigator.serviceWorker.ready;
+  const { clave } = await panel("/push");
+  let sus = await reg.pushManager.getSubscription();
+  if (!sus) sus = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: bytesClave(clave) });
+  const j = sus.toJSON();
+  const r = await panel("/push", { metodo: "POST", datos: { endpoint: j.endpoint, p256dh: j.keys.p256dh, auth: j.keys.auth, nombre: nombreDispositivo(), tareas: true, alertas: true } });
+  try { localStorage.setItem("codice.push.id", String(r.id)); } catch { /* */ }
+  return r.id;
+}
+
+async function desactivarAqui(id) {
+  const sus = await suscripcionLocal().catch(() => null);
+  if (sus) await sus.unsubscribe().catch(() => {});
+  if (id) await panel(`/push/${id}`, { metodo: "DELETE" }).catch(() => {});
+  try { localStorage.removeItem("codice.push.id"); } catch { /* */ }
+}
+
+async function pintarPush(caja) {
+  let datos;
+  try { datos = await panel("/push"); }
+  catch (e) { vaciar(caja, h("p.tenue", e.estado === 404 ? "Disponible cuando faro esté en la versión 1.2." : e.message)); return; }
+  const local = await suscripcionLocal().catch(() => null);
+  let idLocal = null;
+  try { idLocal = Number(localStorage.getItem("codice.push.id")) || null; } catch { /* */ }
+  const aqui = local && datos.dispositivos.find((d) => d.id === idLocal);
+  const recargar = () => pintarPush(caja);
+  const otros = datos.dispositivos.filter((d) => !aqui || d.id !== aqui.id);
+  const casilla = (d, campo, texto) => {
+    const c = h("input", { type: "checkbox", checked: d[campo] });
+    c.addEventListener("change", async () => { try { await panel(`/push/${d.id}`, { metodo: "PATCH", datos: { [campo]: c.checked } }); } catch (e) { toast(e.message, "error"); c.checked = !c.checked; } });
+    return h("label.casilla", c, h("span", texto));
+  };
+  const prueba = (tipo, texto) => h("button.boton.chico", { type: "button", onclick: async () => {
+    try { const r = await panel("/push/prueba", { metodo: "POST", datos: { tipo } }); toast(r.enviados ? `Prueba enviada a ${r.enviados} dispositivo(s). Debería llegar en unos segundos.` : "No se pudo entregar: revisa la conexión de faro.", r.enviados ? "ok" : "error", 7000); }
+    catch (e) { toast(e.message, "error"); }
+  } }, texto);
+  vaciar(caja,
+    h("p.suave", "Te llega una notificación aunque cierres el navegador. faro la envía en menos de un minuto, cifrada: Google o Apple solo la entregan y no pueden leerla."),
+    aqui ? h("div.pila",
+      h("p", insignia("activado aquí", "verde"), ` ${aqui.nombre}`),
+      casilla(aqui, "tareas", "Tareas nuevas (reportes, tickets, solicitudes)"),
+      casilla(aqui, "alertas", "Alertas del servidor y señales de ataque"),
+      h("div.fila", prueba("tarea", "Probar tarea"), prueba("servidor", "Probar servidor"), prueba("ataque", "Probar ataque")),
+      h("button.boton.chico.peligro", { type: "button", onclick: async () => { await desactivarAqui(aqui.id); toast("Avisos desactivados en este dispositivo.", "ok"); recargar(); } }, "Desactivar en este dispositivo"))
+      : h("div.pila",
+        h("button.boton.primario", { type: "button", onclick: async (e) => {
+          e.currentTarget.disabled = true;
+          try { await activarPush(); toast("Listo: este dispositivo recibirá los avisos.", "ok"); recargar(); }
+          catch (err) { toast(err.message, "error", 9000); e.currentTarget.disabled = false; }
+        } }, "Recibir avisos en este dispositivo"),
+        esIOS() && !instalada() ? h("p.aviso.atencion", "En iPhone: abre codicecuba.org en Safari, pulsa Compartir (el cuadrado con la flecha) → «Añadir a pantalla de inicio». Abre CODICE desde ese icono, entra al panel y pulsa este botón.") : null),
+    h("p.tenue.mini", "Cada tipo vibra distinto en Android: corto para tareas, largo para el servidor y en ráfagas para los ataques. El sonido es el de notificaciones de tu móvil."),
+    otros.length ? h("div", h("strong", "Tus otros dispositivos"), h("ul.lista-limpia", otros.map((d) => h("li.elemento.pequeno",
+      h("span.crece", h("span.titulo", d.nombre), h("span.meta.completa", d.ultimo_ok ? `último aviso entregado ${fechaHora(d.ultimo_ok)}` : `activado ${fechaHora(d.creada)}`)),
+      h("button.boton.chico.fantasma", { type: "button", onclick: async () => { await panel(`/push/${d.id}`, { metodo: "DELETE" }).catch((e) => toast(e.message, "error")); recargar(); } }, "Quitar"))))) : null);
 }
