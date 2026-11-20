@@ -423,3 +423,29 @@ body.modo-panel .dividido { grid-template-columns: minmax(300px, 400px) minmax(0
 @media (max-width: 900px) { .dos { grid-template-columns: minmax(0, 1fr); } }
 .filtros.anchos { gap: 10px 12px; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); }
 @media (max-width: 520px) { .filtros.anchos { grid-template-columns: minmax(0, 1fr); } }
+
+/* --- 1.2 · Avisos con sonido del panel ----------------------------------------------------------- */
+.boton-campana { width: 48px; height: 48px; flex: none; border-radius: 12px; border: 1px solid var(--borde2); background: var(--capa); color: var(--texto); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+.boton-campana:hover { border-color: var(--primario); }
+.contador.tareas { margin-left: 8px; }
+.avisos-panel { position: fixed; top: 78px; right: 16px; z-index: 70; width: min(380px, calc(100vw - 24px)); display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
+.notif { pointer-events: auto; display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 14px 12px 14px 14px; border-radius: 14px;
+  background: var(--capa); border: 1px solid var(--borde2); border-left: 4px solid var(--primario); box-shadow: 0 12px 32px rgba(0, 0, 0, .35); animation: notif-entra .28s cubic-bezier(.2, .9, .3, 1.2); }
+.notif.servidor { border-left-color: var(--ambar); }
+.notif.ataque { border-left-color: var(--rojo); }
+.notif.grave { border-color: rgba(240, 68, 56, .6); border-left-color: var(--rojo); }
+.notif-icono { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; background: rgba(56, 189, 248, .14); color: var(--primario); }
+.notif.servidor .notif-icono { background: rgba(240, 160, 32, .16); color: var(--ambar); }
+.notif.ataque .notif-icono { background: rgba(240, 68, 56, .15); color: var(--rojo); }
+.notif-cuerpo { min-width: 0; }
+.notif-cuerpo strong { display: block; font-size: .95rem; }
+.notif-cuerpo p { margin: 2px 0 0; color: var(--suave); font-size: .9rem; overflow-wrap: anywhere; }
+.notif-meta { display: block; margin-top: 4px; color: var(--tenue); font-size: .8rem; }
+.notif-ir { display: inline-block; margin-top: 6px; font-weight: 600; font-size: .88rem; color: var(--primario); text-decoration: none; }
+.notif-cerrar { width: 32px; height: 32px; border: 0; border-radius: 8px; background: transparent; color: var(--tenue); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.notif-cerrar:hover { background: var(--capa2); color: var(--texto); }
+.notif.saliendo { opacity: 0; transform: translateX(16px); transition: opacity .2s, transform .2s; }
+@keyframes notif-entra { from { opacity: 0; transform: translateX(24px) scale(.98); } to { opacity: 1; transform: none; } }
+.ajuste-aviso { display: flex; gap: 10px 14px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; padding: 10px 0; border-top: 1px solid var(--borde); }
+.ajuste-aviso > .casilla { flex: 1 1 240px; min-width: 0; }
+@media (max-width: 600px) { .avisos-panel { top: auto; bottom: 12px; right: 10px; left: 10px; width: auto; flex-direction: column-reverse; } .notif { padding: 12px 8px 12px 12px; } .notif-icono { width: 34px; height: 34px; } }

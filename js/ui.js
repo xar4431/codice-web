@@ -51,6 +51,8 @@ export function icono(nombre, tam = 18) {
     candado: "M6 11h12v9H6zM8 11V8a4 4 0 0 1 8 0v3",
     grafo: "M6 6m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0M18 8m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0M12 18m-2 0a2 2 0 1 0 4 0 2 2 0 1 0-4 0M8 6.5l8 1.2M7 8l4 8M17 10l-4 6",
     servidor: "M4 5h16v6H4zM4 13h16v6H4zM8 8h.01M8 16h.01",
+    campana: "M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9M10.3 21a1.94 1.94 0 0 0 3.4 0",
+    bandeja: "M22 12h-6l-2 3h-4l-2-3H2M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z",
   };
   const ns = "http://www.w3.org/2000/svg";
   const svg = document.createElementNS(ns, "svg");
