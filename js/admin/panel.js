@@ -5,6 +5,7 @@ import { h, vaciar, campo, toast, cargando, icono, copiar } from "../ui.js";
 const SECCIONES = {
   "": ["Hoy te toca", () => import("./hoy.js")],
   cola: ["Reportes", () => import("./cola.js"), "revisar"],
+  importar: ["Importar casos", () => import("./importar.js"), "admin"],
   campanas: ["Campañas", () => import("./campanas.js")],
   investigacion: ["Investigación", () => import("./investigacion.js")],
   tickets: ["Tickets", () => import("./tickets.js"), "tickets"],
@@ -16,7 +17,7 @@ const SECCIONES = {
   servidor: ["Servidor", () => import("./servidor.js"), "servidor"],
   ajustes: ["Ajustes", () => import("./ajustes.js"), "admin"],
 };
-const GRUPOS = [["Trabajo diario", ["", "cola", "campanas", "investigacion"]], ["Comunidad", ["tickets", "solicitudes", "usuarios", "avisos"]],
+const GRUPOS = [["Trabajo diario", ["", "cola", "importar", "campanas", "investigacion"]], ["Comunidad", ["tickets", "solicitudes", "usuarios", "avisos"]],
   ["Control", ["papelera", "historial", "servidor", "ajustes"]]];
 
 export let yo = null;
