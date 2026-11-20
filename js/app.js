@@ -1,5 +1,5 @@
 // CODICE 1.0 · enrutador de la web pública y del panel.
-import { pedir, sesion } from "./api.js";
+import { pedir, sesion, API } from "./api.js";
 import { $, h, vaciar, cargando, toast } from "./ui.js";
 
 // Las páginas se piden con la edición de la web para que el navegador no use copias viejas.
@@ -57,6 +57,21 @@ async function enrutar() {
   }
   if (!params.has("sin-subir")) window.scrollTo(0, 0);
   main.focus({ preventScroll: true });
+  contarVisita(raiz);
+}
+
+// Métricas propias de CODICE: una línea por página vista. Sin cookies ni Google; el panel no cuenta y
+// si el navegador pide «No rastrear» no se envía nada. Va como texto simple para no gastar una consulta extra.
+let primeraVisita = true;
+function contarVisita(raiz) {
+  if (raiz === "admin" || !API) return;
+  if (navigator.doNotTrack === "1" || window.doNotTrack === "1" || navigator.globalPrivacyControl) return;
+  const ref = primeraVisita ? document.referrer : "";
+  primeraVisita = false;
+  try {
+    fetch(API + "/api/visita", { method: "POST", body: JSON.stringify({ r: (location.hash || "#/").split("?")[0], f: ref, a: window.innerWidth }),
+      headers: { "Content-Type": "text/plain" }, credentials: "omit", mode: "cors", keepalive: true, cache: "no-store" }).catch(() => {});
+  } catch { /* sin conexión: no pasa nada */ }
 }
 
 async function franjaAlerta() {

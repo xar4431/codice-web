@@ -91,6 +91,8 @@ async function pintarDetalle(caja, id, estado) {
       r.fuente ? h("p.tenue", "Caso importado por el admin desde una fuente pública.") : h("p.tenue", r.autor ? `Enviado con cuenta: ${r.autor.usuario}${r.autor.confianza !== undefined ? ` · confianza ${r.autor.confianza}` : ""}` : "Enviado sin cuenta",
         r.repetido_origen ? ` · ${r.repetido_origen} reportes más desde la misma conexión esta semana` : "", r.caso_padre ? ` · se suma al caso ${r.caso_padre}` : ""),
       r.autor?.id && puede("revisar") ? h("div.fila", h("a.boton.chico", { href: `#/admin/usuarios/${r.autor.id}` }, "Ver usuario")) : null,
+      !r.autor && !r.fuente && puede("sancionar") ? h("div.fila", h("button.boton.chico.peligro", { type: "button", onclick: () => bloquearConexion(id, r.codigo) }, "Bloquear esta conexión"),
+        h("span.tenue.mini", "Para sabotajes con reportes falsos sin cuenta.")) : null,
       r.mensajes.length ? h("div.pila", h("h3", "Conversación"), r.mensajes.map((m) => h("div.aviso", h("strong", m.autor === "moderacion" ? "Moderación" : "Denunciante"), h("span.tenue", ` · ${fechaHora(m.creado)}`), h("p", { estilo: { margin: "4px 0 0" } }, m.texto)))) : null),
     indicadores: () => {
       const tipo = seleccion("tipo", cat.indicadores, "telefono", { vacioTexto: null });
@@ -167,6 +169,22 @@ async function pintarDetalle(caja, id, estado) {
         location.hash = r.siguiente ? `#/admin/cola/${r.siguiente}?estado=${estado}` : `#/admin/cola?estado=${estado}`;
       } }, "Papelera") : null,
       r.siguiente ? h("a.boton.fantasma", { href: `#/admin/cola/${r.siguiente}?estado=${estado}&sin-subir=1` }, "Siguiente →") : null)));
+}
+
+async function bloquearConexion(id, codigo) {
+  const opciones = [["1h", "1 hora"], ["24h", "24 horas"], ["7d", "7 días"], ["30d", "30 días"]].concat(puede("admin") ? [["siempre", "Para siempre"]] : []);
+  const dur = h("select", opciones.map(([k, t]) => h("option", { value: k, selected: k === "24h" }, t)));
+  const motivo = h("input", { type: "text", maxlength: 200, value: "Sabotaje con reportes falsos" });
+  const ok = await dialogo("Bloquear la conexión de este reporte", h("div.pila",
+    h("p.suave", `Quien envió ${codigo} no podrá usar CODICE desde esa conexión durante el tiempo que elijas. El reporte no se borra: recházalo aparte si es falso.`),
+    campo("Duración", dur), campo("Motivo", motivo),
+    h("p.aviso.atencion", "En Cuba una conexión puede ser de muchas personas: usa bloqueos cortos salvo sabotaje claro.")),
+  { acciones: [{ texto: "Cancelar", valor: null, clase: "fantasma" }, { texto: "Bloquear", valor: true, clase: "peligro" }] });
+  if (!ok) return;
+  try {
+    const x = await panel(`/reportes/${id}/bloquear-origen`, { metodo: "POST", datos: { duracion: dur.value, motivo: motivo.value } });
+    toast(`Conexión bloqueada${x.con_ip ? "" : " (solo por hoy: ya no quedaba su IP)"}.${x.otros_pendientes ? ` Hay ${x.otros_pendientes} reportes pendientes más desde ella.` : ""}`, "ok", 7000);
+  } catch (e) { toast(e.estado === 404 ? "Esto necesita faro 1.2." : e.message, "error"); }
 }
 
 async function relacion(xid, estado, recargar) {
