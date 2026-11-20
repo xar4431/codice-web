@@ -3,7 +3,7 @@ import { panel, pedir, sesion, ErrorApi } from "../api.js";
 import { h, vaciar, campo, toast, cargando, icono, copiar } from "../ui.js";
 
 const SECCIONES = {
-  "": ["Hoy te toca", () => import("./hoy.js")],
+  "": ["Tareas", () => import("./hoy.js")],
   cola: ["Reportes", () => import("./cola.js"), "revisar"],
   importar: ["Importar casos", () => import("./importar.js"), "admin"],
   campanas: ["Campañas", () => import("./campanas.js")],
