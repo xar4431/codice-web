@@ -13,7 +13,9 @@ export async function mostrar(main) {
   const avisos = h("section", { hidden: true, "aria-labelledby": "t-avisos" });
   const alertas = h("div", cargando("Cargando alertas…"));
   const lateral = h("div.pila");
+  const cifrasBanner = h("div.banner-cifras", { "aria-live": "polite" });
   vaciar(main,
+    banner(entrada, cifrasBanner),
     avisos,
     h("div.portada",
       h("section.pila.heroe",
@@ -32,6 +34,7 @@ export async function mostrar(main) {
   try {
     const d = await pedir("/api/inicio");
     pintarAvisos(avisos, d.avisos);
+    pintarCifrasBanner(cifrasBanner, d.totales);
     pintarAlertas(alertas, d.alertas);
     vaciar(lateral,
       h("div.cifras", cifra(d.totales.casos, "casos publicados"), cifra(d.totales.campanas, "campañas"), cifra(d.totales.indicadores, "indicadores")),
@@ -47,6 +50,40 @@ export async function mostrar(main) {
     } catch { vaciar(alertas, h("p.tenue", "No disponible ahora.")); }
     vaciar(lateral, h("div.aviso.atencion", "El servidor de CODICE no responde ahora mismo. El buscador sigue funcionando con la última copia publicada; reportar y consultar casos estará disponible en cuanto vuelva."));
   }
+}
+
+// Banner de la portada: faro animado, palabra que cambia y cifras que suben al cargar.
+function banner(entrada, cifras) {
+  const palabras = ["número", "enlace", "perfil", "tarjeta"];
+  return h("section.banner", { "aria-label": "Presentación de CODICE" },
+    h("div.banner-faro", { "aria-hidden": "true" }, h("img", { src: "img/banner-faro.svg", alt: "", width: 1000, height: 340, decoding: "async" })),
+    h("div.banner-texto",
+      h("p.banner-antetitulo", "Contra las estafas digitales en Cuba"),
+      h("p.banner-titulo", "Comprueba el ",
+        h("span.oculto-visual", "número, enlace, perfil o tarjeta"),
+        h("span.banner-rotor", { "aria-hidden": "true" }, h("span.banner-palabras", [...palabras, palabras[0]].map((p) => h("span", p)))),
+        h("br"), "antes de pagar"),
+      h("p.banner-lema", "Mira si ya fue reportado como estafa. Si te pasó a ti, repórtalo de forma anónima y evita que otros caigan."),
+      h("div.banner-botones",
+        h("button.boton.primario", { type: "button", onclick: () => { entrada.scrollIntoView({ behavior: "smooth", block: "center" }); entrada.focus({ preventScroll: true }); } }, icono("buscar"), "Comprobar ahora"),
+        h("a.boton.banner-secundario", { href: "#/reportar" }, "Reportar estafa")),
+      cifras));
+}
+
+function pintarCifrasBanner(caja, t) {
+  const datos = [[t.casos, "casos publicados"], [t.campanas, "campañas"], [t.indicadores, "datos de estafadores"]];
+  vaciar(caja, datos.map(([n, texto]) => { const b = h("b", "0"); contar(b, n || 0); return h("span", b, " ", texto); }));
+}
+
+function contar(el, fin) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches || fin < 5) { el.textContent = String(fin); return; }
+  const inicio = performance.now(), dura = 1400;
+  const paso = (ahora) => {
+    const x = Math.min(1, (ahora - inicio) / dura), suave = 1 - Math.pow(1 - x, 3);
+    el.textContent = Math.round(fin * suave).toLocaleString("es");
+    if (x < 1) requestAnimationFrame(paso);
+  };
+  requestAnimationFrame(paso);
 }
 
 function cifra(n, t) { return h("div.cifra", h("b", String(n ?? 0)), h("span", t)); }

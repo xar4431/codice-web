@@ -114,6 +114,41 @@ input[type=date] { display: block; min-width: 0; max-width: 100%; -webkit-appear
 input[type=date]::-webkit-date-and-time-value { text-align: left; }
 .filtros { display: grid; gap: 0 12px; grid-template-columns: repeat(auto-fill, minmax(140px, 200px)); }
 .filtros > * { min-width: 0; }
+/* Banner de la portada (faro animado de fondo) */
+.banner { position: relative; overflow: hidden; margin-bottom: 22px; padding: 34px 36px 46px; min-height: 320px; border-radius: 22px; color: #E6EBF5;
+  border: 1px solid #1F2A3D; background: radial-gradient(110% 130% at 85% 25%, #17375A 0%, #0F1E33 45%, #0B0F17 100%); box-shadow: 0 18px 40px rgba(3, 6, 12, .3); }
+.banner-faro { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.banner-faro img { width: 100%; height: 100%; object-fit: cover; object-position: right bottom; display: block; }
+.banner::before { content: ""; position: absolute; inset: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(90deg, rgba(11, 15, 23, .82) 0%, rgba(11, 15, 23, .55) 42%, rgba(11, 15, 23, 0) 70%); }
+.banner-texto { position: relative; z-index: 1; max-width: 560px; animation: banner-entra .7s ease-out both; }
+@keyframes banner-entra { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+.banner-antetitulo { margin: 0 0 10px; color: #F0A020; font: 600 .78rem var(--mono); letter-spacing: .12em; text-transform: uppercase; }
+.banner-titulo { margin: 0 0 12px; font-size: clamp(1.75rem, 4.2vw, 2.7rem); font-weight: 800; line-height: 1.15; letter-spacing: -.01em; }
+.banner-rotor { display: inline-block; height: 1.15em; overflow: hidden; vertical-align: bottom; }
+.banner-palabras { display: flex; flex-direction: column; color: #38BDF8; animation: banner-palabras 8s cubic-bezier(.7, 0, .3, 1) infinite; }
+.banner-palabras span { display: block; height: 1.15em; }
+@keyframes banner-palabras { 0%, 20% { transform: translateY(0); } 25%, 45% { transform: translateY(-1.15em); } 50%, 70% { transform: translateY(-2.3em); } 75%, 95% { transform: translateY(-3.45em); } 100% { transform: translateY(-4.6em); } }
+.banner-lema { color: #B4BED1; max-width: 46ch; margin: 0 0 18px; font-size: 1.02rem; }
+.banner-botones { display: flex; gap: 10px; flex-wrap: wrap; }
+.banner .boton.primario { background: #38BDF8; border-color: #38BDF8; color: #04121C; }
+.banner .boton.primario:hover { background: #7DD3FC; }
+.banner-secundario { background: rgba(255, 255, 255, .07); border-color: #2B3A55; color: #E6EBF5; backdrop-filter: blur(4px); }
+.banner-secundario:hover { color: #fff; border-color: #38BDF8; }
+.banner-cifras { display: flex; gap: 6px 18px; flex-wrap: wrap; margin-top: 20px; color: #9AA6BF; font-size: .9rem; min-height: 1.4em; }
+.banner-cifras b { color: #E6EBF5; font-family: var(--mono); font-size: 1.05rem; }
+@media (max-width: 760px) {
+  .banner { padding: 22px 18px 132px; min-height: 0; }
+  .banner::before { display: none; }
+  .banner-faro { top: auto; height: 170px; }
+  .banner-faro img { object-position: 82% bottom; }
+  .banner-antetitulo { font-size: .68rem; letter-spacing: .1em; }
+  .banner-lema { font-size: .95rem; }
+  .banner-botones .boton { flex: 1 1 140px; padding: 0 12px; }
+  .banner-cifras { font-size: .82rem; gap: 4px 12px; }
+}
+@media (prefers-reduced-motion: reduce) { .banner-palabras, .banner-texto { animation: none; } }
+
 /* Recortes de ejemplo en la guía */
 .recortes { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 12px; }
 .recorte { display: block; width: 100%; max-width: 340px; height: auto; border-radius: 12px; }
