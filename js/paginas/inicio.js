@@ -71,7 +71,7 @@ function banner(entrada, cifras) {
 }
 
 function pintarCifrasBanner(caja, t) {
-  const datos = [[t.casos, "casos publicados"], [t.campanas, "campañas"], [t.indicadores, "datos de estafadores"]];
+  const datos = [[t.casos, "casos publicados"], [t.campanas, "campañas"], [t.indicadores, "indicadores"]];
   vaciar(caja, datos.map(([n, texto]) => { const b = h("b", "0"); contar(b, n || 0); return h("span", b, " ", texto); }));
 }
 
