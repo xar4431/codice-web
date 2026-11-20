@@ -88,12 +88,12 @@ async function pintarDetalle(caja, id, estado) {
       const tipo = seleccion("tipo", cat.indicadores, "telefono", { vacioTexto: null });
       const valor = h("input", { type: "text", placeholder: "Añadir indicador" });
       return h("div.pila",
-        h("table.tabla", h("thead", h("tr", h("th", "Tipo"), h("th", "Valor"), h("th", "Otros reportes"), h("th", "Estado"), h("th", ""))),
+        h("div.desplazable", h("table.tabla", h("thead", h("tr", h("th", "Tipo"), h("th", "Valor"), h("th", "Otros reportes"), h("th", "Estado"), h("th", ""))),
           h("tbody", r.indicadores.map((i) => h("tr", h("td", i.tipo_nombre), h("td", h("span.indicador", i.valor_original), i.imita ? h("div", h("span.insignia.rojo", "imita a una entidad oficial")) : null, i.origen !== "denunciante" ? h("div.tenue.mini", i.origen) : null),
             h("td", i.veces ? h("a", { href: `#/admin/investigacion?indicador=${encodeURIComponent(`${i.tipo}:${i.valor_norm}`)}` }, `${i.veces} →`) : "0"),
             h("td", insignia(i.estado === "sugerido" ? "sugerido (OCR)" : i.estado, i.estado === "activo" ? "verde" : "")),
             h("td", puede("revisar") ? h("div.fila", i.estado !== "activo" ? h("button.boton.chico", { type: "button", onclick: () => estadoInd(i.id, "activo") }, "Aceptar") : null,
-              i.estado !== "descartado" ? h("button.boton.chico.fantasma", { type: "button", onclick: () => estadoInd(i.id, "descartado") }, "Descartar") : null) : null))))),
+              i.estado !== "descartado" ? h("button.boton.chico.fantasma", { type: "button", onclick: () => estadoInd(i.id, "descartado") }, "Descartar") : null) : null)))))),
         puede("revisar") ? h("form.fila", { onsubmit: async (e) => {
           e.preventDefault();
           try { await panel(`/reportes/${id}/indicadores`, { metodo: "POST", datos: { tipo: tipo.value, valor: valor.value } }); recargar(); } catch (err) { toast(err.message, "error"); }

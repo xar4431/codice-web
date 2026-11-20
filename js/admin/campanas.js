@@ -75,9 +75,9 @@ async function detalle(caja, id) {
       campo("Etiquetas", f.etiquetas, { ayuda: "Separadas por comas." }), h("label.casilla", f.publica, h("span", "Visible en la web pública")),
       puede("campanas") ? h("div.fila", h("button.boton.primario", { type: "button", onclick: guardar }, "Guardar")) : null),
     casos: () => h("div.pila",
-      h("table.tabla", h("thead", h("tr", h("th", ""), h("th", "Caso"), h("th", "Estado"), h("th", "Fecha"), h("th", "Lugar"))),
+      h("div.desplazable", h("table.tabla", h("thead", h("tr", h("th", ""), h("th", "Caso"), h("th", "Estado"), h("th", "Fecha"), h("th", "Lugar"))),
         h("tbody", k.casos.map((r) => h("tr", h("td", h("input", { type: "checkbox", value: r.id, "aria-label": `Seleccionar ${r.codigo}` })),
-          h("td", h("a", { href: `#/admin/cola/${r.id}` }, r.codigo)), h("td", insignia(r.estado_nombre, "estado-" + r.estado)), h("td", fecha(r.fecha)), h("td", r.municipio))))),
+          h("td", h("a", { href: `#/admin/cola/${r.id}` }, r.codigo)), h("td", insignia(r.estado_nombre, "estado-" + r.estado)), h("td", fecha(r.fecha)), h("td", r.municipio)))))),
       puede("campanas") ? h("div.fila",
         h("button.boton.chico", { type: "button", onclick: async () => {
           const t = await pedirTexto("Añadir casos", { etiqueta: "Códigos de caso separados por comas" });

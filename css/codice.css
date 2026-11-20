@@ -75,7 +75,8 @@ main:focus { outline: none; }
 /* Bloques */
 .tarjeta { background: var(--capa); border: 1px solid var(--borde); border-radius: 16px; padding: 18px; }
 .tarjeta + .tarjeta { margin-top: 14px; }
-.rejilla { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.rejilla { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr)); }
+.rejilla > *, .avisos > *, .galeria > *, .opciones > * { min-width: 0; }
 .fila { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .fila.fin { justify-content: flex-end; }
 .pila { display: flex; flex-direction: column; gap: 12px; }
@@ -103,6 +104,11 @@ main:focus { outline: none; }
 .boton.chico { min-height: 36px; padding: 0 12px; font-size: .88rem; border-radius: 10px; }
 .boton[disabled], .boton[aria-busy="true"] { opacity: .55; cursor: not-allowed; }
 .boton.ancho { width: 100%; }
+/* En pantallas pequeñas los botones con texto largo bajan de línea en vez de salirse. */
+@media (max-width: 520px) { .boton, button.boton { white-space: normal; text-align: center; max-width: 100%; padding-top: 6px; padding-bottom: 6px; } }
+/* Códigos, enlaces y datos largos se cortan dentro de su caja en lugar de estirarla. */
+main a, main .indicador, main code, .elemento .crece { overflow-wrap: anywhere; }
+.tabla .indicador, .tabla code { white-space: nowrap; overflow-wrap: normal; } /* en tablas el dato va entero: la tabla se desliza */
 label { display: block; font-weight: 600; margin-bottom: 6px; font-size: .95rem; }
 .campo { margin-bottom: 14px; }
 .campo .ayuda { color: var(--suave); font-size: .86rem; margin-top: 4px; }
@@ -210,9 +216,15 @@ a.elemento:hover { background: var(--capa2); border-radius: 10px; }
 .elemento .crece { flex: 1; min-width: 0; }
 .elemento .titulo { font-weight: 600; display: block; overflow: hidden; text-overflow: ellipsis; }
 .elemento .meta { color: var(--suave); font-size: .86rem; }
+@media (max-width: 600px) {
+  .elemento { flex-wrap: wrap; align-items: flex-start; }
+  .elemento .crece { flex-basis: calc(100% - 40px); }
+  .elemento > input ~ .insignia { margin-left: 34px; }
+  .elemento .meta:last-child { display: -webkit-box !important; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+}
 
 /* Avisos de CODICE */
-.avisos { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); margin-bottom: 24px; }
+.avisos { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr)); margin-bottom: 24px; }
 .aviso-noticia { border-radius: 16px; overflow: hidden; background: var(--capa); border: 1px solid var(--borde); display: flex; flex-direction: column; }
 .aviso-noticia.alerta { border-color: rgba(240, 68, 56, .6); }
 .aviso-noticia.actualizacion { border-color: rgba(56, 189, 248, .45); }
@@ -268,7 +280,7 @@ a.elemento:hover { background: var(--capa2); border-radius: 10px; }
 
 /* Fichas y pruebas */
 .ficha-meta { display: flex; flex-wrap: wrap; gap: 8px 18px; color: var(--suave); font-size: .92rem; margin-bottom: 12px; }
-.galeria { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+.galeria { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(180px, 100%), 1fr)); }
 .galeria a, .galeria figure { display: block; border-radius: 12px; overflow: hidden; border: 1px solid var(--borde); background: #000; margin: 0; }
 .galeria img { width: 100%; height: 180px; object-fit: cover; display: block; }
 .indicador { font-family: var(--mono); background: var(--entrada); border: 1px solid var(--borde2); border-radius: 8px; padding: 2px 8px; font-size: .9rem; }
@@ -294,11 +306,13 @@ a.elemento:hover { background: var(--capa2); border-radius: 10px; }
 .panel-barra .buscar-global { flex: 1; min-width: 200px; position: relative; }
 .resultados-globales { position: absolute; top: 52px; left: 0; right: 0; background: var(--capa); border: 1px solid var(--borde2); border-radius: 12px; z-index: 30; box-shadow: var(--sombra); max-height: 60vh; overflow: auto; }
 .dividido { display: grid; grid-template-columns: minmax(280px, 380px) minmax(0, 1fr); gap: 16px; align-items: start; }
+.dividido > * { min-width: 0; }
 .dividido .lista { max-height: calc(100vh - 170px); overflow: auto; position: sticky; top: 76px; }
 .tarea { display: flex; gap: 12px; align-items: center; padding: 14px; border-radius: 12px; background: var(--capa2); border-left: 4px solid var(--primario); text-decoration: none; color: var(--texto); }
 .tarea.urgente { border-left-color: var(--rojo); } .tarea.aviso { border-left-color: var(--ambar); } .tarea.info { border-left-color: var(--tenue); }
 .seleccionado { outline: 2px solid var(--primario); background: rgba(56, 189, 248, .06); border-radius: 10px; }
 .acciones-fijas { position: sticky; bottom: 0; background: linear-gradient(transparent, var(--fondo) 30%); padding: 18px 0 8px; display: flex; gap: 8px; flex-wrap: wrap; z-index: 5; }
+@media (max-width: 600px) { .acciones-fijas { position: static; background: none; padding-top: 10px; } } /* en el móvil no flota encima del contenido */
 .deshacer { position: fixed; bottom: 16px; right: 16px; z-index: 61; }
 .editor-tapado { position: relative; display: inline-block; max-width: 100%; user-select: none; touch-action: none; }
 .editor-tapado img { display: block; max-width: 100%; max-height: 70vh; }
@@ -313,12 +327,12 @@ a.elemento:hover { background: var(--capa2); border-radius: 10px; }
   .panel-lateral { position: static; flex-direction: row; overflow-x: auto; gap: 4px; padding-bottom: 6px; border-bottom: 1px solid var(--borde); }
   .panel-lateral .grupo { display: none; }
   .panel-lateral a { white-space: nowrap; }
-  .dividido { grid-template-columns: 1fr; }
+  .dividido { grid-template-columns: minmax(0, 1fr); }
   .dividido .lista { position: static; max-height: none; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
 @media print { .cabecera, .pie, .toasts, .acciones-fijas, .panel-lateral { display: none !important; } body { background: #fff; color: #000; } }
 body.modo-panel main { max-width: 1560px; }
 body.modo-panel .dividido { grid-template-columns: minmax(300px, 400px) minmax(0, 1fr); }
-@media (max-width: 980px) { body.modo-panel .dividido { grid-template-columns: 1fr; } }
+@media (max-width: 980px) { body.modo-panel .dividido { grid-template-columns: minmax(0, 1fr); } }
 .rejilla > .tarjeta + .tarjeta, .pila > .tarjeta + .tarjeta, .portada > .tarjeta + .tarjeta, .avisos > * + * { margin-top: 0; }
