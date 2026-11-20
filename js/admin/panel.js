@@ -34,7 +34,17 @@ export async function mostrar(main, partes, params) {
   const [, cargar, permiso] = SECCIONES[seccion];
   if (!puede(permiso)) { toast("No tienes permiso para esa sección.", "error"); location.hash = "#/admin"; return; }
   const contenido = h("div", cargando());
-  vaciar(main, h("div.panel", lateral(seccion), h("div", barra(), contenido)));
+  // En el móvil el menú se desliza de lado: al cambiar de sección se queda donde estaba.
+  const antes = main.querySelector(".panel-lateral")?.scrollLeft || 0;
+  const menu = lateral(seccion);
+  vaciar(main, h("div.panel", menu, h("div", barra(), contenido)));
+  menu.scrollLeft = antes;
+  const activo = menu.querySelector('[aria-current="page"]');
+  if (activo && menu.scrollWidth > menu.clientWidth) {
+    const izq = activo.offsetLeft - menu.offsetLeft, der = izq + activo.offsetWidth;
+    if (izq < menu.scrollLeft) menu.scrollLeft = izq - 12;
+    else if (der > menu.scrollLeft + menu.clientWidth) menu.scrollLeft = der - menu.clientWidth + 12;
+  }
   const modulo = await cargar();
   await modulo.mostrar(contenido, partes.slice(1), params);
 }
