@@ -11,6 +11,8 @@ export async function mostrar(caja, [tab = "resumen"], params) {
   vaciar(caja, h("div.cabecera-pagina", h("div", h("h1", "Servidor faro"), h("p", "Iniciar, detener o reiniciar el servidor y apagar la PC solo se hace en la app de faro, nunca desde la web."))),
     h("div.pestanas", { role: "tablist" }, TABS.map(([k, t]) => h("button", { type: "button", role: "tab", "aria-selected": String(k === tab), onclick: () => { location.hash = `#/admin/servidor/${k}`; } }, t))),
     cuerpo);
+  // En el móvil, que la pestaña abierta quede a la vista aunque esté al final de la fila.
+  caja.querySelector('.pestanas [aria-selected="true"]')?.scrollIntoView({ block: "nearest", inline: "center" });
   try { await SECCIONES[tab](cuerpo, params); } catch (e) { vaciar(cuerpo, h("div.aviso.error", e.message)); }
 }
 
