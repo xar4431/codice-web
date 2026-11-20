@@ -13,7 +13,7 @@ export async function mostrar(caja, [id], params) {
   q.addEventListener("change", ir); rol.addEventListener("change", ir);
   const d = await panel(`/usuarios?q=${encodeURIComponent(q.value)}&rol=${rol.value}`);
   vaciar(caja, h("div.cabecera-pagina", h("div", h("h1", "Usuarios"), h("p", "Roles, permisos, confianza y sanciones."))),
-    h("div.fila", { estilo: { marginBottom: "12px" } }, h("div", { estilo: { flex: 1, minWidth: "200px" } }, q), h("div", { estilo: { width: "200px" } }, rol)),
+    h("div.fila", { estilo: { marginBottom: "12px" } }, h("div", { estilo: { flex: "2 1 180px", minWidth: 0 } }, q), h("div", { estilo: { flex: "1 1 140px", minWidth: 0, maxWidth: "220px" } }, rol)),
     h("div.tarjeta.desplazable", d.usuarios.length ? h("table.tabla", h("thead", h("tr", h("th", "Usuario"), h("th", "Rol"), h("th", "Reportes"), h("th", "Confianza"), h("th", "Sanción"), h("th", "Último acceso"))),
       h("tbody", d.usuarios.map((u) => h("tr", h("td", h("a", { href: `#/admin/usuarios/${u.id}` }, u.usuario)),
         h("td", insignia(u.rol + (u.en_prueba ? " · prueba" : ""), u.rol === "admin" ? "rojo" : u.rol === "moderador" ? "azul" : "")),
