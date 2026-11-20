@@ -54,7 +54,7 @@ export async function mostrar(main, _p, params) {
     };
     t.addEventListener("change", () => { fila.tipo = t.value; comprobar(); });
     v.addEventListener("input", () => { fila.valor = v.value; comprobar(); });
-    const caja = h("div.tarjeta", { estilo: { padding: "12px" } }, h("div.rejilla", { estilo: { gridTemplateColumns: "minmax(140px, 1fr) minmax(180px, 2fr)" } }, t, v), aviso,
+    const caja = h("div.tarjeta", { estilo: { padding: "12px" } }, h("div.fila-indicador", t, v), aviso,
       h("button.boton.fantasma.chico", { type: "button", onclick: () => { indicadores.splice(indicadores.indexOf(fila), 1); caja.remove(); } }, "Quitar"));
     listaInd.append(caja);
     v.focus();
