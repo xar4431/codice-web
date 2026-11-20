@@ -1,6 +1,7 @@
 // Panel de admin y moderación: acceso con doble verificación y navegación interna.
 import { panel, pedir, sesion, ErrorApi } from "../api.js";
 import { h, vaciar, campo, toast, cargando, icono, copiar } from "../ui.js";
+import { iniciar as iniciarAvisos, detener as detenerAvisos, pintarContadores, botonAjustes } from "./notificador.js";
 
 // Las pantallas se piden con la edición de la web para que el navegador no use copias viejas.
 const E = "?e=" + ((window.CODICE_CONFIG || {}).edicion || "");
@@ -31,6 +32,7 @@ export async function mostrar(main, partes, params) {
   try { yo = await panel("/yo"); }
   catch (e) { if (e instanceof ErrorApi && e.estado === 401) { sesion.panel = null; return entrar(main); } throw e; }
   vigilarInactividad();
+  iniciarAvisos();
   const seccion = SECCIONES[partes[0] || ""] ? partes[0] || "" : "";
   const [, cargar, permiso] = SECCIONES[seccion];
   if (!puede(permiso)) { toast("No tienes permiso para esa sección.", "error"); location.hash = "#/admin"; return; }
@@ -40,6 +42,7 @@ export async function mostrar(main, partes, params) {
   const menu = lateral(seccion);
   vaciar(main, h("div.panel", menu, h("div", barra(), contenido)));
   menu.scrollLeft = antes;
+  pintarContadores();
   const activo = menu.querySelector('[aria-current="page"]');
   if (activo && menu.scrollWidth > menu.clientWidth) {
     const izq = activo.offsetLeft - menu.offsetLeft, der = izq + activo.offsetWidth;
@@ -84,7 +87,7 @@ function barra() {
   });
   q.addEventListener("keydown", (e) => { if (e.key === "Escape") res.hidden = true; });
   document.addEventListener("click", (e) => { if (!res.contains(e.target) && e.target !== q) res.hidden = true; });
-  return h("div.panel-barra", h("div.buscar-global", q, res));
+  return h("div.panel-barra", h("div.buscar-global", q, res), botonAjustes());
 }
 
 function enlace(x) {
@@ -93,6 +96,7 @@ function enlace(x) {
 }
 
 async function salir() {
+  detenerAvisos();
   try { await panel("/salir", { metodo: "POST" }); } catch { /* */ }
   sesion.panel = null; yo = null; location.hash = "#/";
 }
