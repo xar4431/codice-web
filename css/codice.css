@@ -449,5 +449,3 @@ body.modo-panel .dividido { grid-template-columns: minmax(300px, 400px) minmax(0
 .ajuste-aviso { display: flex; gap: 10px 14px; align-items: flex-start; justify-content: space-between; flex-wrap: wrap; padding: 10px 0; border-top: 1px solid var(--borde); }
 .ajuste-aviso > .casilla { flex: 1 1 240px; min-width: 0; }
 @media (max-width: 600px) { .avisos-panel { top: auto; bottom: 12px; right: 10px; left: 10px; width: auto; flex-direction: column-reverse; } .notif { padding: 12px 8px 12px 12px; } .notif-icono { width: 34px; height: 34px; } }
-.subtitulo-aviso { margin: 8px 0 0; font-size: 1rem; color: var(--texto); }
-.push-ajustes { padding-top: 4px; }

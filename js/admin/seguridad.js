@@ -183,16 +183,7 @@ const VISTA = {
         d.accesos.length ? h("ul.lista-limpia", d.accesos.map((a) => h("li.elemento.pequeno",
           h("span.crece", h("span.titulo", a.usuario, " ", a.nuevo ? insignia("nuevo", "rojo") : null), h("span.meta.completa", `${lugar(a.lugar)} · ${equipo(a)}`)),
           h("span.tenue", fechaHora(a.fecha))))) : h("p.tenue", "Todavía no hay entradas registradas."),
-        h("p.aviso", { estilo: { marginTop: "12px" } }, "🔒 La doble verificación (código de 6 cifras del móvil) es obligatoria para todo el equipo."))),
-      h("section.tarjeta", { estilo: { marginTop: "14px" } }, h("h2", "Dispositivos que reciben avisos push"),
-        h("p.tenue", puede("admin") ? "Móviles y PCs del equipo que reciben avisos aunque el panel esté cerrado. Si alguien deja el equipo o pierde el móvil, quítalo aquí." : "Tus móviles y PCs que reciben avisos aunque el panel esté cerrado."),
-        (d.dispositivos_push || []).length ? h("ul.lista-limpia", d.dispositivos_push.map((x) => h("li.elemento.pequeno",
-          h("span.crece", h("span.titulo", `${x.usuario} · ${x.nombre}`),
-            h("span.meta.completa", [x.tareas ? "tareas" : null, x.alertas ? "alertas" : null].filter(Boolean).join(" y ") + (x.ultimo_ok ? ` · último aviso entregado ${hace(x.ultimo_ok)}` : ` · activado ${hace(x.creada)}`))),
-          h("button.boton.chico.peligro", { type: "button", onclick: async () => {
-            if (!(await confirmar("Quitar dispositivo", `${x.usuario} dejará de recibir avisos en «${x.nombre}».`, { boton: "Quitar", peligro: true }))) return;
-            try { await panel(`/push/${x.id}`, { metodo: "DELETE" }); toast("Quitado.", "ok"); recargar(); } catch (e) { toast(e.message, "error"); }
-          } }, "Quitar")))) : h("p.tenue", "Ninguno todavía. Se activa desde la campana del panel.")));
+        h("p.aviso", { estilo: { marginTop: "12px" } }, "🔒 La doble verificación (código de 6 cifras del móvil) es obligatoria para todo el equipo."))));
   },
 };
 
