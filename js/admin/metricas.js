@@ -113,8 +113,7 @@ function pintar(cuerpo, d, periodo, serieDe, alCambiarSerie) {
         : h("p.tenue", "Ninguna por ahora.")),
     meses.length ? h("section.tarjeta", { estilo: { marginTop: "14px" } }, h("h2", "Mes a mes"),
       grafico(meses, { bajo: true, resumen: `Visitas por mes (${meses.length} ${meses.length === 1 ? "mes" : "meses"} con datos).` })) : null,
-    h("p.tenue.mini", { estilo: { marginTop: "14px" } }, "Se actualiza sola cada 15 segundos. Ubicación aproximada: ",
-      h("a", { href: "https://db-ip.com", target: "_blank", rel: "noopener" }, "DB-IP"), "."));
+    h("p.tenue.mini", { estilo: { marginTop: "14px" } }, "Se actualiza sola cada 15 segundos."));
 }
 
 // Las redes envían a veces dominios intermedios (l.wl.co es WhatsApp; lm.facebook.com, Facebook…).
