@@ -141,7 +141,7 @@ export function pintarContadores() {
   document.querySelector(".boton-campana")?.setAttribute("aria-label", sinVer ? `Avisos: ${sinVer} nuevos` : "Avisos");
   const base = tituloBase.replace(/^\(\d+\)\s*/, "");
   document.title = sinVer ? `(${sinVer}) ${base}` : base;
-  for (const [k, ruta] of [["reportes", "cola"], ["tickets", "tickets"], ["solicitudes", "solicitudes"]]) {
+  for (const [k, ruta] of [["reportes", "cola"], ["investigaciones", "investigaciones"], ["tickets", "tickets"], ["solicitudes", "solicitudes"]]) {
     const a = document.querySelector(`.panel-lateral a[href="#/admin/${ruta}"]`);
     if (!a) continue;
     let c = a.querySelector(".contador.tareas");

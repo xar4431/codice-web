@@ -1,64 +1,96 @@
-// Investigación: grafo de reportes e indicadores con filtros y fichas.
+// Mapa: casos, datos y expedientes conectados. Desde aquí se centra, se amplía y se abre la ficha de cada cosa.
 import { panel } from "../api.js";
-import { dibujarGrafo, leyendaGrafo } from "../grafo.js";
-import { h, vaciar, insignia, fecha, fechaHora, toast, campo, cargando } from "../ui.js";
+import { crearMapa } from "../mapa.js";
+import { h, vaciar, fecha, fechaHora, toast, campo, cargando, insignia } from "../ui.js";
 import { puede } from "./panel.js";
+
+const SITUACIONES = { desconocido: "Sin comprobar", activo: "Sigue activo", caido: "Caído o dado de baja" };
+const CONFIANZAS = { baja: "Confianza baja", media: "Confianza media", alta: "Confianza alta" };
 
 export async function mostrar(caja, _p, params) {
   let centro = params.get("centro") || (params.get("indicador") ? `indicador:${params.get("indicador")}` : "");
   const desde = h("input", { type: "date" }), hasta = h("input", { type: "date" });
   const prof = h("select", h("option", { value: 1 }, "1 salto"), h("option", { value: 2 }, "2 saltos"), h("option", { value: 3 }, "3 saltos"));
   prof.value = "2";
-  const conf = h("input", { type: "checkbox" });
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.classList.add("grafo", "alto");
-  const ficha = h("div.tarjeta", h("p.tenue", "Toca un punto del grafo para ver su ficha."));
-  const info = h("p.tenue");
-  let control;
+  const conf = h("input", { type: "checkbox" }), sueltos = h("input", { type: "checkbox" });
+  const titulo = h("p.tenue");
+  const hueco = h("div", cargando());
+  let mapa = null;
   const cargar = async () => {
     const q = new URLSearchParams({ centro, profundidad: prof.value });
     if (desde.value) q.set("desde", desde.value);
     if (hasta.value) q.set("hasta", hasta.value);
     if (conf.checked) q.set("confirmadas", "1");
-    const g = await panel("/grafo?" + q);
-    info.textContent = `${g.nodos.filter((n) => n.clase === "reporte").length} reportes · ${g.nodos.filter((n) => n.clase === "indicador").length} indicadores compartidos${centro ? "" : " · últimos 60 reportes"}`;
-    control = dibujarGrafo(svg, g, { alTocar: (n) => (n.clase === "reporte" ? fichaReporte(ficha, n) : fichaIndicador(ficha, n.clave, n, (c) => { centro = c; cargar(); })) });
+    if (sueltos.checked) q.set("sueltos", "1");
+    try {
+      const g = await panel("/grafo?" + q);
+      titulo.textContent = centro ? `Centrado en ${descripcion(centro)} · ${prof.value} ${prof.value === "1" ? "salto" : "saltos"}` : "Últimos 60 casos y los datos que comparten";
+      if (mapa) mapa.recargar(g);
+      else {
+        mapa = crearMapa(g, { acciones: (n) => acciones(n, (c) => { centro = c; history.replaceState(null, "", `#/admin/investigacion?centro=${encodeURIComponent(c)}`); cargar(); }), detalle });
+        vaciar(hueco, mapa.el);
+      }
+    } catch (e) { vaciar(hueco, h("p.aviso.error", e.message)); }
   };
-  vaciar(caja, h("div.cabecera-pagina", h("div", h("h1", "Investigación"), h("p", "Ata cabos: casos (●) unidos por datos compartidos (◆) y relaciones calculadas."))),
-    h("div.tarjeta", h("div.filtros", h("div", campo("Desde", desde)), h("div", campo("Hasta", hasta)), h("div", campo("Ampliar", prof))),
-      h("div.fila", { estilo: { alignItems: "flex-end" } },
-      h("label.casilla", { estilo: { marginBottom: "14px" } }, conf, h("span", "Solo publicados")),
-      h("button.boton.primario", { type: "button", onclick: cargar, estilo: { marginBottom: "14px" } }, "Aplicar"),
-      h("button.boton.fantasma", { type: "button", onclick: () => { centro = ""; cargar(); }, estilo: { marginBottom: "14px" } }, "Ver todo"),
-      h("button.boton.fantasma", { type: "button", onclick: () => control?.acercar(1.3), "aria-label": "Acercar", estilo: { marginBottom: "14px" } }, "+"),
-      h("button.boton.fantasma", { type: "button", onclick: () => control?.acercar(1 / 1.3), "aria-label": "Alejar", estilo: { marginBottom: "14px" } }, "−")),
-      info, svg, leyendaGrafo(h)),
-    h("div", { estilo: { marginTop: "14px" } }, ficha));
+  vaciar(caja, h("div.cabecera-pagina", h("div", h("h1", "Mapa"), h("p", "Cómo se conectan los casos, los datos que comparten y los expedientes. Todo queda dentro de CODICE."))),
+    h("div.tarjeta",
+      h("details.filtros-mapa", h("summary", "Qué cargar"),
+        h("div.filtros", h("div", campo("Desde", desde)), h("div", campo("Hasta", hasta)), h("div", campo("Ampliar", prof))),
+        h("div.fila", { estilo: { alignItems: "center" } },
+          h("label.casilla", conf, h("span", "Solo publicados")), h("label.casilla", sueltos, h("span", "Datos de un solo caso")),
+          h("button.boton.primario.chico", { type: "button", onclick: cargar }, "Aplicar"),
+          h("button.boton.fantasma.chico", { type: "button", onclick: () => { centro = ""; history.replaceState(null, "", "#/admin/investigacion"); cargar(); } }, "Ver todo"))),
+      titulo, hueco));
   await cargar();
-  if (params.get("indicador") && puede("datos_privados")) fichaIndicador(ficha, params.get("indicador"), null, (c) => { centro = c; cargar(); });
 }
 
-function fichaReporte(caja, n) {
-  vaciar(caja, h("h2", n.etiqueta), h("p", insignia(n.estado, "estado-" + n.estado), " ", n.tipo || "", " · ", fecha(n.fecha)),
-    n.campana ? h("p", "Campaña: ", h("strong", n.campana)) : null,
-    h("div.fila", h("a.boton.chico.primario", { href: `#/admin/cola/${n.ref}` }, "Abrir reporte"), h("a.boton.chico", { href: `#/admin/investigacion?centro=reporte:${n.ref}` }, "Centrar aquí")));
+function descripcion(c) {
+  const [t, ...r] = c.split(":");
+  return { reporte: "un caso", campana: "una campaña", investigacion: "un expediente", indicador: `el dato ${r.slice(1).join(":")}` }[t] || c;
 }
 
-async function fichaIndicador(caja, clave, n, centrar) {
-  if (!clave) { vaciar(caja, h("h2", n?.etiqueta || "Indicador"), h("p.tenue", "Tu rol no permite ver el valor completo."), h("p", `Aparece en ${n?.casos || "?"} casos.`)); return; }
-  vaciar(caja, cargando());
-  const [tipo, ...resto] = clave.split(":");
-  const valor = resto.join(":");
-  try {
-    const i = (await panel(`/indicador?tipo=${encodeURIComponent(tipo)}&valor=${encodeURIComponent(valor)}`)).indicador;
-    const t = h("textarea", { placeholder: "Nota sobre este indicador (p. ej. «tarjeta de una mula»)" });
-    vaciar(caja, h("h2", h("span.indicador", i.valor)), h("p.suave", `${i.tipo_nombre} · en ${i.reportes.length} reportes · desde ${fecha(i.desde)} hasta ${fecha(i.hasta)}`),
-      i.campanas.length ? h("p", "Campañas: ", i.campanas.join(", ")) : null,
-      h("div.fila", h("button.boton.chico", { type: "button", onclick: () => centrar(`indicador:${clave}`) }, "Centrar el grafo aquí")),
-      h("h3", { estilo: { marginTop: "12px" } }, "Historial"),
-      h("ul.lista-limpia", i.reportes.map((r) => h("li.elemento", h("span.mono.tenue", fecha(r.fecha_incidente)), h("span.crece", h("a", { href: `#/admin/cola/${r.id}` }, r.codigo), r.campana ? ` · ${r.campana}` : ""),
-        insignia(r.estado, "estado-" + r.estado), h("span.tenue.mini", `añadido por ${r.origen} ${fechaHora(r.anadido)}`)))),
-      h("h3", "Notas"), i.notas.map((x) => h("div.aviso", h("strong", x.usuario || "—"), ` · ${fechaHora(x.creada)}: `, x.texto)),
-      puede("campanas") ? h("form.pila", { onsubmit: async (e) => { e.preventDefault(); await panel("/notas", { metodo: "POST", datos: { objeto: `indicador:${clave}`, texto: t.value } }); toast("Nota guardada.", "ok"); fichaIndicador(caja, clave, n, centrar); } }, t, h("div", h("button.boton.chico", { type: "submit" }, "Añadir nota"))) : null);
-  } catch (e) { vaciar(caja, h("p.aviso.error", e.message)); }
+function acciones(n, centrar) {
+  if (n.clase === "reporte") return [h("a.boton.chico.primario", { href: `#/admin/cola/${n.ref}` }, "Abrir caso"), h("button.boton.chico.fantasma", { type: "button", onclick: () => centrar(`reporte:${n.ref}`) }, "Centrar aquí")];
+  if (n.clase === "expediente") return [h("a.boton.chico.primario", { href: `#/admin/investigaciones/${n.ref}` }, "Abrir expediente")];
+  return n.clave ? [h("button.boton.chico.fantasma", { type: "button", onclick: () => centrar(`indicador:${n.clave}`) }, "Centrar aquí")] : [];
 }
+
+// Ficha ampliada de un dato: historial, expedientes, situación compartida y notas.
+async function detalle(n) {
+  if (n.clase !== "indicador") return null;
+  if (!n.clave) return h("p.tenue.mini", "Tu rol no permite ver el valor completo de este dato.");
+  const [tipo, ...resto] = n.clave.split(":");
+  const i = (await panel(`/indicador?tipo=${encodeURIComponent(tipo)}&valor=${encodeURIComponent(resto.join(":"))}`)).indicador;
+  const caja = h("div.pila");
+  const sit = h("select", Object.entries(SITUACIONES).map(([k, t]) => h("option", { value: k }, t)));
+  const con = h("select", Object.entries(CONFIANZAS).map(([k, t]) => h("option", { value: k }, t)));
+  const vic = h("input", { type: "checkbox", checked: i.ficha.posible_victima });
+  sit.value = i.ficha.situacion; con.value = i.ficha.confianza;
+  const guardarFicha = async () => {
+    try {
+      await panel("/fichas", { metodo: "PUT", datos: { clave: n.clave, situacion: sit.value, confianza: con.value, posible_victima: vic.checked } });
+      Object.assign(n, { situacion: sit.value, posible_victima: vic.checked });
+      toast("Ficha del dato guardada para todo el equipo.", "ok");
+    } catch (e) { toast(e.message, "error"); }
+  };
+  const nota = h("textarea", { placeholder: "Nota sobre este dato (p. ej. «tarjeta de una mula», «número robado»)", rows: 2 });
+  vaciar(caja,
+    puede("investigar") ? h("div.pila.ficha-dato", h("div.dos", campo("Situación", sit), campo("Confianza", con)),
+      h("label.casilla", vic, h("span", "Puede ser de una víctima (no se exporta en TXT)")),
+      h("div", h("button.boton.chico", { type: "button", onclick: guardarFicha }, "Guardar ficha")),
+      i.ficha.por ? h("p.tenue.mini", `Última revisión: ${i.ficha.por} · ${fechaHora(i.ficha.actualizado)}`) : null) : null,
+    i.reportes.length ? h("div", h("h4", `En ${i.reportes.length} ${i.reportes.length === 1 ? "caso" : "casos"}${i.desde ? ` · ${fecha(i.desde)} – ${fecha(i.hasta)}` : ""}`),
+      h("ul.lista-limpia", i.reportes.slice(0, 15).map((r) => h("li.elemento.pequeno", h("span.mono.tenue", fecha(r.fecha_incidente)), h("a.crece", { href: `#/admin/cola/${r.id}` }, r.codigo), r.campana ? h("span.tenue.mini", r.campana) : null)))) : null,
+    i.expedientes.length ? h("div", h("h4", "En expedientes"), h("div.fila", i.expedientes.map((x) => h("a.insignia" + (x.estado === "cerrada" ? "" : ".azul"), { href: `#/admin/investigaciones/${x.id}` }, `${x.codigo} · ${x.estado_nombre}`)))) : null,
+    h("div", h("h4", "Notas"), i.notas.length ? i.notas.map((x) => h("p.pequeno", h("strong", x.usuario || "—"), h("span.tenue", ` · ${fechaHora(x.creada)}: `), x.texto)) : h("p.tenue.mini", "Sin notas.")),
+    puede("campanas") ? h("form.pila", { onsubmit: async (e) => {
+      e.preventDefault();
+      if (!nota.value.trim()) return;
+      try { await panel("/notas", { metodo: "POST", datos: { objeto: `indicador:${n.clave}`, texto: nota.value } }); toast("Nota guardada.", "ok"); nota.value = ""; vaciar(caja, await detalle(n)); }
+      catch (err) { toast(err.message, "error"); }
+    } }, nota, h("div", h("button.boton.chico.fantasma", { type: "submit" }, "Añadir nota"))) : null,
+    i.campanas.length ? h("p.tenue.mini", "Campañas: ", i.campanas.map((k) => insignia(k))) : null);
+  return caja;
+}
+
+export { detalle as detalleDato };

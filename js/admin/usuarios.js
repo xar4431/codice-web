@@ -47,7 +47,12 @@ async function detalle(caja, id) {
         u.historial.length ? h("section.tarjeta", h("h2", "Acciones de esta cuenta"), h("ul.lista-limpia", u.historial.map((x) => h("li.elemento.pequeno", h("span.crece", `${x.accion} ${x.objeto || ""}`), h("span.tenue", fechaHora(x.fecha)))))) : null),
       h("aside.pila",
         esAdmin && u.rol !== "admin" ? h("section.tarjeta", h("h2", "Rol y permisos"),
-          u.rol === "moderador" ? [h("label.casilla", prueba, h("span", "Periodo de prueba (sin datos privados completos ni descargas)")), h("hr.separador"), permisos.map((p) => p[2]),
+          u.rol === "moderador" ? [h("label.casilla", prueba, h("span", "Periodo de prueba (sin datos privados completos ni descargas)")), h("hr.separador"),
+            h("div.fila", { estilo: { marginBottom: "8px" } }, h("span.tenue.mini", "Perfil rápido:"),
+              h("button.boton.chico.fantasma", { type: "button", onclick: () => permisos.forEach(([k, c]) => { c.checked = !!r.por_defecto[k]; }) }, "Moderador"),
+              h("button.boton.chico.fantasma", { type: "button", onclick: () => { permisos.forEach(([k, c]) => { c.checked = !!r.perfil_investigador[k]; }); prueba.checked = false; } }, "Investigador")),
+            h("p.tenue.mini", "Investigador: trabaja expedientes, datos y el mapa; no modera reportes ni toca usuarios. Pulsa «Guardar permisos» para aplicarlo."),
+            permisos.map((p) => p[2]),
             h("div.fila", { estilo: { marginTop: "10px" } }, h("button.boton.primario", { type: "button", onclick: async () => {
               await panel(`/usuarios/${id}/rol`, { metodo: "POST", datos: { rol: "moderador", en_prueba: prueba.checked, permisos: Object.fromEntries(permisos.map(([k, c]) => [k, c.checked])) } });
               toast("Permisos guardados.", "ok"); recargar();
@@ -55,7 +60,11 @@ async function detalle(caja, id) {
               if (!(await confirmar("Quitar rol de moderador", "Se cerrarán todas sus sesiones al instante.", { boton: "Quitar rol", peligro: true }))) return;
               await panel(`/usuarios/${id}/rol`, { metodo: "POST", datos: { rol: "usuario" } }); toast("Ya no es moderador.", "ok"); recargar();
             } }, "Quitar rol"))]
-            : h("button.boton", { type: "button", onclick: async () => { await panel(`/usuarios/${id}/rol`, { metodo: "POST", datos: { rol: "moderador", en_prueba: true, permisos: {} } }); toast("Ahora es moderador en periodo de prueba.", "ok"); recargar(); } }, "Hacer moderador (periodo de prueba)")) : null,
+            : h("div.pila", h("button.boton", { type: "button", onclick: async () => { await panel(`/usuarios/${id}/rol`, { metodo: "POST", datos: { rol: "moderador", en_prueba: true, permisos: {} } }); toast("Ahora es moderador en periodo de prueba.", "ok"); recargar(); } }, "Hacer moderador (periodo de prueba)"),
+              h("button.boton.fantasma", { type: "button", onclick: async () => {
+                if (!(await confirmar("Hacer investigador", "Podrá ver datos privados de los casos para investigarlos. No podrá moderar reportes ni tocar usuarios. Necesitará la doble verificación para entrar.", { boton: "Hacer investigador" }))) return;
+                await panel(`/usuarios/${id}/rol`, { metodo: "POST", datos: { rol: "moderador", en_prueba: false, permisos: r.perfil_investigador } }); toast("Ahora es investigador.", "ok"); recargar();
+              } }, "Hacer investigador"))) : null,
         esAdmin ? h("section.tarjeta", h("h2", "Acceso"),
           h("div.pila", h("button.boton.chico", { type: "button", onclick: async () => {
             const x = await panel(`/usuarios/${id}/codigo-temporal`, { metodo: "POST" });

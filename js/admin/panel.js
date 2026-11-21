@@ -9,8 +9,9 @@ const SECCIONES = {
   "": ["Tareas", () => import("./hoy.js" + E)],
   cola: ["Reportes", () => import("./cola.js" + E), "revisar"],
   importar: ["Importar casos", () => import("./importar.js" + E), "admin"],
+  investigaciones: ["Investigaciones", () => import("./investigaciones.js" + E), "investigar"],
   campanas: ["Campañas", () => import("./campanas.js" + E)],
-  investigacion: ["Investigación", () => import("./investigacion.js" + E)],
+  investigacion: ["Mapa", () => import("./investigacion.js" + E)],
   tickets: ["Tickets", () => import("./tickets.js" + E), "tickets"],
   solicitudes: ["Colaboración", () => import("./solicitudes.js" + E), "tickets"],
   usuarios: ["Usuarios", () => import("./usuarios.js" + E), "sancionar"],
@@ -21,7 +22,7 @@ const SECCIONES = {
   servidor: ["Servidor", () => import("./servidor.js" + E), "servidor"],
   ajustes: ["Ajustes", () => import("./ajustes.js" + E), "admin"],
 };
-const GRUPOS = [["Trabajo diario", ["", "cola", "importar", "campanas", "investigacion"]], ["Comunidad", ["tickets", "solicitudes", "usuarios", "avisos"]],
+const GRUPOS = [["Trabajo diario", ["", "cola", "importar", "investigaciones", "campanas", "investigacion"]], ["Comunidad", ["tickets", "solicitudes", "usuarios", "avisos"]],
   ["Control", ["papelera", "historial", "metricas", "servidor", "ajustes"]]];
 
 export let yo = null;
@@ -35,7 +36,9 @@ export async function mostrar(main, partes, params) {
   iniciarAvisos();
   const seccion = SECCIONES[partes[0] || ""] ? partes[0] || "" : "";
   const [, cargar, permiso] = SECCIONES[seccion];
-  if (!puede(permiso)) { toast("No tienes permiso para esa sección.", "error"); location.hash = "#/admin"; return; }
+  // Quien investiga puede abrir un caso concreto aunque no modere la cola.
+  const permitido = puede(permiso) || (seccion === "cola" && partes[1] && puede("investigar"));
+  if (!permitido) { toast("No tienes permiso para esa sección.", "error"); location.hash = "#/admin"; return; }
   const contenido = h("div", cargando());
   // En el móvil el menú se desliza de lado: al cambiar de sección se queda donde estaba.
   const antes = main.querySelector(".panel-lateral")?.scrollLeft || 0;
@@ -61,7 +64,7 @@ export function puede(permiso) {
 
 function lateral(actual) {
   return h("nav.panel-lateral", { "aria-label": "Panel" },
-    h("div.fila", { estilo: { padding: "4px 12px 8px" } }, h("strong", yo.usuario), h("span.insignia" + (yo.rol === "admin" ? ".rojo" : ".azul"), yo.en_prueba ? "moderador · prueba" : yo.rol)),
+    h("div.fila", { estilo: { padding: "4px 12px 8px" } }, h("strong", yo.usuario), h("span.insignia" + (yo.rol === "admin" ? ".rojo" : ".azul"), yo.en_prueba ? "moderador · prueba" : yo.rol === "moderador" && yo.permisos?.investigar && !yo.permisos?.revisar ? "investigador" : yo.rol)),
     GRUPOS.map(([titulo, claves]) => [h("div.grupo", titulo), claves.filter((k) => puede(SECCIONES[k][2])).map((k) =>
       h("a", { href: `#/admin/${k}`, "aria-current": k === actual ? "page" : null }, SECCIONES[k][0],
         k === "servidor" && yo.alertas ? h("span.contador.rojo", String(yo.alertas)) : null))]),

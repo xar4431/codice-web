@@ -122,7 +122,7 @@ async function pintarDetalle(caja, id, estado) {
         h("ul.pequeno", x.motivos.map((m) => h("li", m.texto))), x.banderas_texto.length ? h("p.tenue", x.banderas_texto.join(" · ")) : null,
         puede("campanas") ? h("div.fila", h("button.boton.chico", { type: "button", onclick: () => relacion(x.id, "confirmada", recargar) }, "Confirmar"),
           h("button.boton.chico.fantasma", { type: "button", onclick: () => relacion(x.id, "descartada", recargar) }, "Descartar"),
-          h("a.boton.chico.fantasma", { href: `#/admin/investigacion?centro=reporte:${id}` }, "Ver en el grafo")) : null)) : vacio("Sin relaciones detectadas.")),
+          h("a.boton.chico.fantasma", { href: `#/admin/investigacion?centro=reporte:${id}` }, "Ver en el mapa")) : null)) : vacio("Sin relaciones detectadas.")),
     publico: () => h("div.pila", h("p.suave", "Esto es lo que verá el público. El resumen sugerido ya tapa números y correos: revísalo."),
       campo("Título", titulo), campo("Resumen público", resumen), campo("Entidad suplantada", entidad),
       puede("censurar") ? h("div", h("button.boton", { type: "button", onclick: async () => {
@@ -140,6 +140,12 @@ async function pintarDetalle(caja, id, estado) {
   vaciar(caja, h("div.tarjeta",
     h("div.fila", { estilo: { justifyContent: "space-between" } }, h("h2", { estilo: { margin: 0 } }, r.codigo),
       h("div.fila", insignia(r.estado_nombre, "estado-" + r.estado), r.prioridad >= 60 ? insignia("urgente", "rojo") : null, h("span.tenue", `recibido ${fechaHora(r.creado)}`))),
+    puede("investigar") ? h("div.fila", { estilo: { margin: "8px 0 4px" } },
+      (r.expedientes || []).map((x) => h("a.insignia" + (x.estado === "cerrada" ? "" : ".azul"), { href: `#/admin/investigaciones/${x.id}` }, `${x.codigo} · ${x.estado_nombre}`)),
+      (r.expedientes || []).some((x) => x.estado !== "cerrada") ? null : h("button.boton.chico", { type: "button", onclick: async () => {
+        try { const x = await panel("/investigaciones", { metodo: "POST", datos: { tipo: "caso", reporte_id: id } }); location.hash = `#/admin/investigaciones/${x.id}`; } catch (e) { toast(e.message, "error"); }
+      } }, "Investigar este caso"),
+      h("a.boton.chico.fantasma", { href: `#/admin/investigacion?centro=reporte:${id}` }, "Ver en el mapa")) : null,
     pestanas([["datos", "Datos"], ["indicadores", `Indicadores (${r.indicadores.length})`], ["pruebas", `Pruebas (${r.pruebas.length})`],
       ["relaciones", `Relaciones (${r.relaciones.length})`], ["publico", "Versión pública"], ["notas", "Notas e historial"]], (k) => vaciar(contenido, secciones[k]())),
     contenido,

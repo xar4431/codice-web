@@ -1,7 +1,7 @@
 // Campañas: sugerencias automáticas, veredicto, posibles responsables, expedientes.
 import { panel, descargar } from "../api.js";
-import { dibujarGrafo, leyendaGrafo } from "../grafo.js";
-import { h, vaciar, insignia, fecha, fechaHora, toast, campo, pestanas, vacio, pedirTexto, confirmar, dialogo } from "../ui.js";
+import { crearMapa } from "../mapa.js";
+import { h, vaciar, insignia, fecha, fechaHora, toast, campo, pestanas, vacio, pedirTexto, confirmar, dialogo, cargando } from "../ui.js";
 import { conDeshacer, puede } from "./panel.js";
 
 const VEREDICTOS = { investigacion: "En investigación", confirmada: "Estafa confirmada (activa)", resuelta: "Resuelta", descartada: "Descartada" };
@@ -41,7 +41,7 @@ function sugerencias(lista) {
         const r = await panel("/campanas", { metodo: "POST", datos: { nombre: n, reportes: s.reportes.map((x) => x.id) } });
         location.hash = `#/admin/campanas/${r.id}`;
       } }, "Crear campaña con estos casos"),
-      h("a.boton.chico.fantasma", { href: `#/admin/investigacion?centro=reporte:${s.reportes[0].id}` }, "Ver en el grafo")) : null)));
+      h("a.boton.chico.fantasma", { href: `#/admin/investigacion?centro=reporte:${s.reportes[0].id}` }, "Ver en el mapa")) : null)));
 }
 
 async function detalle(caja, id) {
@@ -64,8 +64,6 @@ async function detalle(caja, id) {
     if (k.responsables !== null) datos.responsables = f.responsables.value;
     try { await panel(`/campanas/${id}`, { metodo: "PUT", datos }); toast("Campaña guardada.", "ok"); } catch (e) { toast(e.message, "error"); }
   };
-  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  svg.classList.add("grafo");
   const contenido = h("div");
   const secciones = {
     ficha: () => h("div.pila", h("div.rejilla", campo("Nombre", f.nombre), campo("Veredicto", f.veredicto)),
@@ -104,7 +102,12 @@ async function detalle(caja, id) {
     linea: () => h("ul.lista-limpia", k.linea.map((x) => h("li.elemento", h("span.mono.tenue", fecha(x.fecha)), h("span.crece", h("a", { href: `#/admin/cola/${x.id}` }, x.codigo), ` · ${x.tipo} · ${x.municipio}`), insignia(x.estado, "estado-" + x.estado)))),
     indicadores: () => h("ul.lista-limpia", k.indicadores.map((i) => h("li.elemento", h("span.crece", h("span.indicador", i.valor), h("span.meta", ` ${i.tipo_nombre}`)), h("span", `${i.casos} casos`),
       i.clave ? h("a.boton.chico.fantasma", { href: `#/admin/investigacion?indicador=${encodeURIComponent(i.clave)}` }, "Ficha") : null))),
-    grafo: () => { setTimeout(async () => { const g = await panel(`/grafo?centro=campana:${id}&profundidad=1`); dibujarGrafo(svg, g, { alTocar: (n) => { if (n.clase === "reporte") location.hash = `#/admin/cola/${n.ref}`; } }); }); return h("div", svg, leyendaGrafo(h), h("a.boton.chico", { href: `#/admin/investigacion?centro=campana:${id}` }, "Abrir en Investigación")); },
+    grafo: () => {
+      const hueco = h("div", cargando("Dibujando el mapa…"));
+      panel(`/grafo?centro=campana:${id}&profundidad=1`).then((g) => vaciar(hueco, crearMapa(g, { acciones: (n) => n.clase === "reporte" ? [h("a.boton.chico.primario", { href: `#/admin/cola/${n.ref}` }, "Abrir caso")]
+        : n.clase === "indicador" && n.clave ? [h("a.boton.chico.fantasma", { href: `#/admin/investigacion?indicador=${encodeURIComponent(n.clave)}` }, "Ver en el mapa completo")] : [] }).el)).catch((e) => vaciar(hueco, h("p.aviso.error", e.message)));
+      return h("div.pila", hueco, h("a.boton.chico", { href: `#/admin/investigacion?centro=campana:${id}` }, "Abrir en el mapa completo"));
+    },
     notas: () => {
       const t = h("textarea", { placeholder: "Nota interna" });
       return h("div.pila", k.notas.map((n) => h("div.aviso", h("strong", n.usuario || "—"), h("span.tenue", ` · ${fechaHora(n.creada)}`), h("p", { estilo: { margin: "4px 0 0" } }, n.texto))),
@@ -113,7 +116,11 @@ async function detalle(caja, id) {
     },
   };
   vaciar(caja, h("a.volver", { href: "#/admin/campanas" }, "← Campañas"),
-    h("div.cabecera-pagina", h("div", insignia(VEREDICTOS[k.veredicto], "ver-" + k.veredicto), h("h1", { estilo: { marginTop: "6px" } }, k.nombre), h("p", `${k.casos.length} casos · actualizada ${fechaHora(k.actualizada)}`)),
+    h("div.cabecera-pagina", h("div", insignia(VEREDICTOS[k.veredicto], "ver-" + k.veredicto), h("h1", { estilo: { marginTop: "6px" } }, k.nombre), h("p", `${k.casos.length} casos · actualizada ${fechaHora(k.actualizada)}`),
+      puede("investigar") ? h("div.fila", (k.expedientes || []).map((x) => h("a.insignia" + (x.estado === "cerrada" ? "" : ".azul"), { href: `#/admin/investigaciones/${x.id}` }, `${x.codigo} · ${x.estado_nombre}`)),
+        (k.expedientes || []).some((x) => x.estado !== "cerrada") ? null : h("button.boton.chico.primario", { type: "button", onclick: async () => {
+          try { const x = await panel("/investigaciones", { metodo: "POST", datos: { tipo: "campana", campana_id: id } }); location.hash = `#/admin/investigaciones/${x.id}`; } catch (e) { toast(e.message, "error"); }
+        } }, "Investigar esta campaña")) : null),
       h("div.fila", h("a.boton.chico", { href: `#/campana/${k.slug}`, target: "_blank" }, "Ver pública"),
         puede("expedientes") ? [h("button.boton.chico", { type: "button", onclick: () => descargar(`/api/panel/campanas/${id}/expediente?formato=pdf`, `expediente-${k.slug}.pdf`).catch((e) => toast(e.message, "error")) }, "Expediente PDF"),
           h("button.boton.chico", { type: "button", onclick: () => descargar(`/api/panel/campanas/${id}/expediente?formato=zip`, `expediente-${k.slug}.zip`).catch((e) => toast(e.message, "error")) }, "Expediente ZIP"),
@@ -124,7 +131,7 @@ async function detalle(caja, id) {
           conDeshacer("Campaña en la papelera.", x.deshacer, () => { location.hash = `#/admin/campanas/${id}`; });
           location.hash = "#/admin/campanas";
         } }, "Papelera") : null)),
-    h("div.tarjeta", pestanas([["ficha", "Ficha"], ["casos", `Casos (${k.casos.length})`], ["linea", "Línea de tiempo"], ["indicadores", `Indicadores (${k.indicadores.length})`], ["grafo", "Grafo"], ["notas", "Notas e historial"]],
+    h("div.tarjeta", pestanas([["ficha", "Ficha"], ["casos", `Casos (${k.casos.length})`], ["linea", "Línea de tiempo"], ["indicadores", `Indicadores (${k.indicadores.length})`], ["grafo", "Mapa"], ["notas", "Notas e historial"]],
       (x) => vaciar(contenido, secciones[x]())), contenido));
 }
 
