@@ -73,7 +73,7 @@ const VISTA = {
             d.geo?.rangos ? h("p", insignia("cargada", "verde"), ` ${num(d.geo.rangos)} rangos de IP`) : h("p", insignia("sin cargar", "ambar"), " Se carga sola tras actualizar faro."),
             d.geo?.fecha ? h("p.tenue", `Actualizada ${hace(d.geo.fecha)}. Se renueva sola cada mes.`) : null,
             d.geo?.ok === false && d.geo?.mensaje ? h("p.tenue", d.geo.mensaje) : null,
-            h("p.tenue.mini", "Ubicación aproximada dentro de faro con ", h("a", { href: "https://db-ip.com", target: "_blank", rel: "noopener" }, "IP Geolocation by DB-IP"), ": ninguna IP sale hacia otras empresas."))),
+            h("p.tenue.mini", "La ubicación se calcula dentro de faro: ninguna IP sale hacia otras empresas."))),
         h("section.tarjeta", h("h2", "Alertas"), d.alertas.length ? h("ul.lista-limpia", d.alertas.slice(0, 30).map((a) => h("li.elemento.pequeno", h("span.punto." + (a.nivel === "grave" ? "rojo" : a.nivel === "aviso" ? "ambar" : "")), h("span.crece", a.mensaje), h("span.tenue", fechaHora(a.fecha))))) : vacio("Sin alertas."))));
   },
 
