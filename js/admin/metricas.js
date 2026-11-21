@@ -95,12 +95,11 @@ function pintar(cuerpo, d, periodo, serieDe, alCambiarSerie) {
       h("section.tarjeta", h("h2", "Navegadores"), barrasH(d.navegadores.map((x) => ({ nombre: x.valor, valor: x.visitas })), { color: "var(--violeta)" }))),
     h("h2", { estilo: { margin: "22px 0 10px" } }, "De dónde nos visitan"),
     h("div.rejilla",
-      h("section.tarjeta", h("h2", "Países"), barrasH(d.paises.map((x) => ({ nombre: nombrePais(x.valor), valor: x.visitas, detalle: `${x.visitantes} visitantes` })))),
+      h("section.tarjeta", h("h2", "Países"), barrasH(d.paises.map((x) => ({ nombre: nombrePais(x.valor), valor: x.visitas, detalle: `${x.visitantes} visitantes` }))),
+        d.sin_ubicacion ? h("p.tenue.mini", { estilo: { marginTop: "10px" } }, `${num(d.sin_ubicacion)} sin país (VPN o redes privadas).`) : null),
       h("section.tarjeta", h("h2", "Provincias de Cuba"), barrasH(d.cuba.map((x) => ({ nombre: x.valor, valor: x.visitas })), { color: "var(--faro)", vacio: "Aún no hay visitas con provincia de Cuba." })),
       h("section.tarjeta", h("h2", "Ciudades de Cuba"), barrasH(d.ciudades.map((x) => ({ nombre: x.valor, valor: x.visitas })), { color: "var(--faro)", vacio: "Aún no hay visitas con ciudad de Cuba." }))),
-    h("p.tenue.mini", { estilo: { marginTop: "8px" } }, d.geo?.rangos
-      ? [`Ubicación aproximada (por la IP, sin guardarla). ${num(d.sin_ubicacion)} visitas sin ubicación (VPN, redes privadas…). `, h("a", { href: "https://db-ip.com", target: "_blank", rel: "noopener" }, "IP Geolocation by DB-IP"), "."]
-      : "La base de ubicación todavía no está cargada en faro: los países aparecerán cuando termine (se carga sola tras actualizar)."),
+    !d.geo?.rangos ? h("p.tenue.mini", { estilo: { marginTop: "8px" } }, "La base de ubicación todavía no está cargada en faro: los países aparecerán cuando termine.") : null,
     h("h2", { estilo: { margin: "22px 0 10px" } }, "Qué miran y de dónde llegan"),
     h("div.rejilla",
       h("section.tarjeta", h("h2", "Secciones más vistas"), barrasH(d.secciones.map((x) => ({ nombre: x.valor, valor: x.visitas })))),
@@ -114,7 +113,8 @@ function pintar(cuerpo, d, periodo, serieDe, alCambiarSerie) {
         : h("p.tenue", "Ninguna por ahora.")),
     meses.length ? h("section.tarjeta", { estilo: { marginTop: "14px" } }, h("h2", "Mes a mes"),
       grafico(meses, { bajo: true, resumen: `Visitas por mes (${meses.length} ${meses.length === 1 ? "mes" : "meses"} con datos).` })) : null,
-    h("p.tenue.mini", { estilo: { marginTop: "14px" } }, `Periodo: ${PERIODOS.find((p) => p[0] === periodo)[1]} · se actualiza solo cada 15 segundos (se pausa mientras miras el detalle de una barra).`));
+    h("p.tenue.mini", { estilo: { marginTop: "14px" } }, "Se actualiza sola cada 15 segundos. Ubicación aproximada: ",
+      h("a", { href: "https://db-ip.com", target: "_blank", rel: "noopener" }, "DB-IP"), "."));
 }
 
 // Las redes envían a veces dominios intermedios (l.wl.co es WhatsApp; lm.facebook.com, Facebook…).

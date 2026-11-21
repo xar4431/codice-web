@@ -3,5 +3,5 @@ window.CODICE_CONFIG = {
   api: "https://faro.tail64f9c6.ts.net",   // dirección del túnel de faro (Tailscale Funnel)
   sitio: "https://codicecuba.org",     // dirección oficial: la única verdadera
   version: "1.2.0",
-  edicion: "2026-11-21.4"   // súbelo en cada cambio de la web: obliga a los navegadores a cargar las pantallas nuevas
+  edicion: "2026-11-21.5"   // súbelo en cada cambio de la web: obliga a los navegadores a cargar las pantallas nuevas
 };
