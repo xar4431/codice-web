@@ -8,7 +8,7 @@ export async function mostrar(main) {
   catch (e) {
     if (!(e instanceof SinConexion)) throw e;
     lista = await campanasEnCopia().catch(() => []);
-    aviso = h("div.aviso.atencion", "El servidor no responde: mostramos la última copia publicada.");
+    aviso = (await import("../mantenimiento.js" + ((window.CODICE_CONFIG || {}).edicion ? "?e=" + window.CODICE_CONFIG.edicion : ""))).aviso();
   }
   const filtro = h("input", { type: "search", placeholder: "Filtrar por nombre…", "aria-label": "Filtrar campañas" });
   const rejilla = h("div.rejilla");

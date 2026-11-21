@@ -466,3 +466,18 @@ body.modo-panel .dividido { grid-template-columns: minmax(300px, 400px) minmax(0
 .notif-icono.n-ataque { background: rgba(240, 68, 56, .15); color: var(--rojo); }
 .punto-nuevo { width: 10px; height: 10px; border-radius: 50%; background: var(--rojo); margin-top: 6px; }
 button.notif-ir { background: none; border: 0; padding: 0; cursor: pointer; font-family: inherit; }
+
+/* --- Mantenimiento: cuando faro no responde -------------------------------------------------------- */
+.mantenimiento { max-width: 720px; margin: 8px auto 24px; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.mant-imagen { width: 100%; border-radius: 22px; overflow: hidden; box-shadow: 0 18px 48px rgba(0, 0, 0, .35); border: 1px solid var(--borde); line-height: 0; }
+.mant-imagen img { width: 100%; height: auto; display: block; }
+.mantenimiento h1 { margin: 14px 0 0; font-size: clamp(1.45rem, 4.6vw, 2rem); }
+.mant-texto { margin: 0; color: var(--suave); max-width: 560px; font-size: 1.05rem; }
+.mant-estado { margin: 4px 0 0; display: inline-flex; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 999px; background: var(--capa); border: 1px solid var(--borde); color: var(--suave); font-size: .92rem; }
+.mant-punto { width: 9px; height: 9px; border-radius: 50%; background: var(--ambar); animation: latido 1.6s infinite; flex: none; }
+.mant-acciones { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 4px; }
+.mant-aviso { margin-bottom: 14px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: center; padding: 12px; border-radius: 16px; background: var(--capa); border: 1px solid rgba(240, 160, 32, .45); }
+.mant-aviso img { width: 96px; height: 54px; border-radius: 10px; object-fit: cover; display: block; }
+.mant-aviso strong { display: block; }
+.mant-aviso p { margin: 2px 0 0; color: var(--suave); font-size: .9rem; }
+@media (max-width: 420px) { .mant-aviso { gap: 12px; } .mant-aviso img { width: 80px; height: 45px; } .mant-acciones .boton { flex: 1 1 100%; } }
