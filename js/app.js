@@ -1,5 +1,5 @@
 // CODICE 1.0 · enrutador de la web pública y del panel.
-import { pedir, sesion, API } from "./api.js";
+import { pedir, sesion, API, SinConexion } from "./api.js";
 import { $, h, vaciar, cargando, toast } from "./ui.js";
 
 // Las páginas se piden con la edición de la web para que el navegador no use copias viejas.
@@ -51,6 +51,11 @@ async function enrutar() {
     const modulo = await cargador();
     await modulo.mostrar(main, partes.slice(1), params);
   } catch (e) {
+    if (e instanceof SinConexion) {  // faro no responde: pantalla de mantenimiento que se recarga sola al volver
+      const { pantalla } = await import("./mantenimiento.js" + E);
+      vaciar(main, pantalla());
+      return;
+    }
     console.error(e);
     vaciar(main, h("div.aviso.error", { role: "alert" }, e.message || "Algo salió mal al cargar la página."),
       h("p.centro", { estilo: { marginTop: "16px" } }, h("button.boton", { type: "button", onclick: enrutar }, "Reintentar")));

@@ -48,7 +48,8 @@ export async function mostrar(main) {
       const camp = await campanasEnCopia();
       pintarAlertas(alertas, camp.filter((c) => c.veredicto === "confirmada").slice(0, 6));
     } catch { vaciar(alertas, h("p.tenue", "No disponible ahora.")); }
-    vaciar(lateral, h("div.aviso.atencion", "El servidor de CODICE no responde ahora mismo. El buscador sigue funcionando con la última copia publicada; reportar y consultar casos estará disponible en cuanto vuelva."));
+    const { aviso } = await import("../mantenimiento.js" + ((window.CODICE_CONFIG || {}).edicion ? "?e=" + window.CODICE_CONFIG.edicion : ""));
+    vaciar(lateral, aviso("El buscador sigue funcionando con la última copia publicada. Reportar y ver casos volverá en cuanto termine."));
   }
 }
 
