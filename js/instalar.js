@@ -40,11 +40,28 @@ function guia() {
       paso(1, "En la barra de menús de Safari, abre ", h("strong", "Archivo"), "."),
       paso(2, "Elige ", h("strong", "Añadir al Dock"), " y confirma con ", h("strong", "Añadir"), "."),
     ];
+  } else if (/Firefox\//.test(ua)) {
+    pasos = [
+      paso(1, "Firefox no permite instalar webs como app."),
+      paso(2, "Abre ", h("strong", "codicecuba.org"), " en ", h("strong", "Chrome"), " o ", h("strong", "Edge"), " y toca «Instalar app»."),
+    ];
+  } else if (/Android/.test(ua)) {
+    pasos = [
+      paso(1, "Toca el menú de Chrome (los tres puntos, arriba a la derecha)."),
+      paso(2, "Toca ", h("strong", "Añadir a pantalla de inicio"), " o ", h("strong", "Instalar app"), "."),
+      paso(3, "Confirma con ", h("strong", "Instalar"), ". El faro de CODICE aparecerá junto a tus apps."),
+    ];
+  } else if (/Edg\//.test(ua)) {
+    pasos = [
+      paso(1, "Abre el menú de Edge (los tres puntos, arriba a la derecha)."),
+      paso(2, "Entra en ", h("strong", "Aplicaciones"), " y elige ", h("strong", "Instalar este sitio como una aplicación"), "."),
+      paso(3, "Confirma con ", h("strong", "Instalar"), "."),
+    ];
   } else {
     pasos = [
-      paso(1, "Abre el menú del navegador (los tres puntos)."),
-      paso(2, "Busca ", h("strong", "Instalar app"), " o ", h("strong", "Añadir a pantalla de inicio"), "."),
-      paso(3, "Si no aparece, abre codicecuba.org en ", h("strong", "Chrome"), " o ", h("strong", "Edge"), "."),
+      paso(1, "Mira a la derecha de la barra de direcciones: si ves el ícono de instalar (una pantalla con una flecha), tócalo."),
+      paso(2, "Si no está, abre el menú de Chrome (los tres puntos) → ", h("strong", "Transmitir, guardar y compartir"), " → ", h("strong", "Instalar página como app"), "."),
+      paso(3, "Confirma con ", h("strong", "Instalar"), ". CODICE quedará como un programa más, con su acceso directo."),
     ];
   }
   dialogo("Instalar CODICE", h("div",
@@ -66,7 +83,9 @@ async function alTocar() {
 
 if (boton) boton.prepend(icono("descargar", 18));
 document.querySelectorAll("[data-instalar]").forEach((b) => b.addEventListener("click", alTocar));
-if (!yaInstalada() && (esIOS || esSafariMac)) mostrar(true);
+// El botón se muestra siempre que la web no esté abierta como app. Si el navegador todavía no ha
+// avisado de que se puede instalar (Chrome tarda un poco la primera vez), el botón enseña la guía.
+if (!yaInstalada()) mostrar(true);
 
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
