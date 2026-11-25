@@ -1,7 +1,7 @@
 // mapa de investigacion del panel (1.3): casos, datos y expedientes conectados, sin librerias ni servicios de afuera
 // formas y letras por tipo, zonas por campaña, filtros, buscador, linea de tiempo que se reproduce, camino entre
 // dos puntos, aislar conexiones, fijar nodos, minimapa, pantalla grande e imagen PNG. Raton, teclado y dedos
-import { h, vaciar, fecha, insignia, toast, T } from "./ui.js";
+import { h, vaciar, fecha, insignia, toast } from "./ui.js";
 
 const NS = "http://www.w3.org/2000/svg";
 export const TIPOS_MAPA = {
@@ -229,7 +229,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
       }
     }
     const neutro = color("--grafo-neutro"), texto = color("--suave");
-    const fmt = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { month: "short", year: "2-digit" });
+    const fmt = new Intl.DateTimeFormat("es", { month: "short", year: "2-digit" });
     const d = new Date(t0); d.setDate(1);
     const pasoMeses = Math.max(1, Math.ceil((t1 - t0) / (86400000 * 30) / 12));
     while (d.getTime() <= t1 + 86400000 * 31) {
@@ -480,7 +480,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     const cs = nodos.filter((n) => n.clase === "reporte" && n.campana_id === k.id), ds = nodos.filter((n) => n.clase === "indicador" && n.campana_id === k.id);
     const fs = cs.map((n) => n.fecha).filter(Boolean).sort();
     sel = null; camino = []; pintar();
-    vaciar(ficha, h("h3", `Campaña · ${k.nombre}`), h("p.tenue.mini", `${(VEREDICTO[k.veredicto] || VEREDICTO.investigacion)[0]} · ${cs.length} ${T("casos")} · ${ds.length} ${T("datos propios")}${fs.length ? ` · ${fecha(fs[0])} – ${fecha(fs.at(-1))}` : ""}`),
+    vaciar(ficha, h("h3", `Campaña · ${k.nombre}`), h("p.tenue.mini", `${(VEREDICTO[k.veredicto] || VEREDICTO.investigacion)[0]} · ${cs.length} ${("casos")} · ${ds.length} ${("datos propios")}${fs.length ? ` · ${fecha(fs[0])} – ${fecha(fs.at(-1))}` : ""}`),
       h("div.fila.mapa-acciones", h("a.boton.chico.primario", { href: `#/admin/campanas/${k.id}` }, "Abrir campaña"),
         zonas.length > 1 ? h("button.boton.chico", { type: "button", onclick: () => ocultarOtras(k) }, "Ver solo esta campaña") : null));
   }
@@ -544,7 +544,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     copia.removeAttribute("transform");
     copia.querySelectorAll("[display=none]").forEach((x) => x.remove());
     copia.querySelectorAll("text").forEach((t) => t.removeAttribute("display"));
-    const pie = `<text x="${x0 + 16}" y="${y0 + hh - 14}" fill="${color("--suave")}" font-size="12" font-family="system-ui, sans-serif">CODICE · mapa de investigación · ${new Date().toLocaleString((window.CODICE_LOCALE || "es"))} · uso interno del equipo</text>`;
+    const pie = `<text x="${x0 + 16}" y="${y0 + hh - 14}" fill="${color("--suave")}" font-size="12" font-family="system-ui, sans-serif">CODICE · mapa de investigación · ${new Date().toLocaleString("es")} · uso interno del equipo</text>`;
     const fuente = `<svg xmlns="${NS}" viewBox="${x0} ${y0} ${w} ${hh}" width="${Math.round(w * escala)}" height="${Math.round(hh * escala)}"><rect x="${x0}" y="${y0}" width="${w}" height="${hh}" fill="${color("--capa")}"/>${new XMLSerializer().serializeToString(copia)}${pie}</svg>`;
     const url = URL.createObjectURL(new Blob([fuente], { type: "image/svg+xml" }));
     const img = new Image();

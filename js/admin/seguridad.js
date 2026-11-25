@@ -1,13 +1,13 @@
 // Servidor → Seguridad: semaforo, incidentes, bloqueos y sesiones del panel. Todo pasa dentro de faro
 import { panel, blobUrl, ErrorApi } from "../api.js";
-import { h, vaciar, insignia, fechaHora, hace, toast, cargando, vacio, confirmar, campo, T } from "../ui.js";
+import { h, vaciar, insignia, fechaHora, hace, toast, cargando, vacio, confirmar, campo } from "../ui.js";
 import { puede } from "./panel.js";
 import { grafico, leyenda, barrasH, num, nombrePais, EQUIPOS } from "./graficos.js";
 
 const VISTAS = [["resumen", "Resumen"], ["bloqueos", "Bloqueos"], ["incidentes", "Incidentes"], ["sesiones", "Sesiones"]];
 const NIVEL = { alto: ["Grave", "rojo"], medio: ["Medio", "ambar"], bajo: ["Leve", ""] };
 const DURACIONES = [["1h", "1 hora"], ["24h", "24 horas"], ["7d", "7 días"], ["30d", "30 días"], ["siempre", "Para siempre"]];
-const HORA = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { hour: "2-digit", minute: "2-digit" });
+const HORA = new Intl.DateTimeFormat("es", { hour: "2-digit", minute: "2-digit" });
 
 export async function mostrar(c, params) {
   const ver = VISTAS.some(([k]) => k === params.get("ver")) ? params.get("ver") : "resumen";
@@ -89,7 +89,7 @@ const VISTA = {
         h("section.tarjeta", h("h2", "Bloqueados ahora"),
           d.bloqueos.length ? h("ul.lista-limpia", d.bloqueos.map((b) => h("li.elemento",
             h("span.crece", h("span.titulo.mono", b.red || (b.origen ? b.origen + "…" : "—")),
-              h("span.meta.completa", `${b.motivo} · ${lugar(b.lugar)} · ${b.permanente ? T("para siempre") : T("hasta ") + fechaHora(b.hasta)}${b.veces > 1 ? ` · ${b.veces} ${T("veces")}` : ""}${b.autor && b.tipo === "manual" ? ` · ${T("por")} ${b.autor}` : ""}`)),
+              h("span.meta.completa", `${b.motivo} · ${lugar(b.lugar)} · ${b.permanente ? ("para siempre") : ("hasta ") + fechaHora(b.hasta)}${b.veces > 1 ? ` · ${b.veces} ${("veces")}` : ""}${b.autor && b.tipo === "manual" ? ` · ${("por")} ${b.autor}` : ""}`)),
             insignia(b.tipo === "manual" ? "manual" : "automático", b.tipo === "manual" ? "azul" : ""),
             h("button.boton.chico", { type: "button", onclick: async () => {
               if (!(await confirmar("Desbloquear", "Esa conexión podrá volver a usar CODICE enseguida.", { boton: "Desbloquear" }))) return;

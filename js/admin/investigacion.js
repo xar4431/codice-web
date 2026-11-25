@@ -1,7 +1,7 @@
 // mapa: casos, datos y expedientes conectados. Desde aqui centro, amplio y abro la ficha de cada cosa
 import { panel } from "../api.js";
 import { crearMapa } from "../mapa.js";
-import { h, vaciar, fecha, fechaHora, toast, campo, cargando, insignia, T } from "../ui.js";
+import { h, vaciar, fecha, fechaHora, toast, campo, cargando, insignia } from "../ui.js";
 import { puede } from "./panel.js";
 
 const SITUACIONES = { desconocido: "Sin comprobar", activo: "Sigue activo", caido: "Caído o dado de baja" };
@@ -79,7 +79,7 @@ async function detalle(n) {
       h("label.casilla", vic, h("span", "Puede ser de una víctima (no se exporta en TXT)")),
       h("div", h("button.boton.chico", { type: "button", onclick: guardarFicha }, "Guardar ficha")),
       i.ficha.por ? h("p.tenue.mini", `Última revisión: ${i.ficha.por} · ${fechaHora(i.ficha.actualizado)}`) : null) : null,
-    i.reportes.length ? h("div", h("h4", `${T("En")} ${i.reportes.length} ${T(i.reportes.length === 1 ? "caso" : "casos")}${i.desde ? ` · ${fecha(i.desde)} – ${fecha(i.hasta)}` : ""}`),
+    i.reportes.length ? h("div", h("h4", `${("En")} ${i.reportes.length} ${(i.reportes.length === 1 ? "caso" : "casos")}${i.desde ? ` · ${fecha(i.desde)} – ${fecha(i.hasta)}` : ""}`),
       h("ul.lista-limpia", i.reportes.slice(0, 15).map((r) => h("li.elemento.pequeno", h("span.mono.tenue", fecha(r.fecha_incidente)), h("a.crece", { href: `#/admin/cola/${r.id}` }, r.codigo), r.campana ? h("span.tenue.mini", r.campana) : null)))) : null,
     i.expedientes.length ? h("div", h("h4", "En expedientes"), h("div.fila", i.expedientes.map((x) => h("a.insignia" + (x.estado === "cerrada" ? "" : ".azul"), { href: `#/admin/investigaciones/${x.id}` }, `${x.codigo} · ${x.estado_nombre}`)))) : null,
     h("div", h("h4", "Notas"), i.notas.length ? i.notas.map((x) => h("p.pequeno", h("strong", x.usuario || "—"), h("span.tenue", ` · ${fechaHora(x.creada)}: `), x.texto)) : h("p.tenue.mini", "Sin notas.")),

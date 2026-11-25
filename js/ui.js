@@ -113,8 +113,8 @@ export async function pedirTexto(titulo, { etiqueta = "", valor = "", largo = fa
 export function cargando(texto = "Cargando…") { return h("div.cargando", { role: "status" }, texto); }
 export function vacio(texto) { return h("div.vacio", texto); }
 
-const FMT_FECHA = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { day: "numeric", month: "short", year: "numeric" });
-const FMT_HORA = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const FMT_FECHA = new Intl.DateTimeFormat("es", { day: "numeric", month: "short", year: "numeric" });
+const FMT_HORA = new Intl.DateTimeFormat("es", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 export function fecha(iso) { if (!iso) return "—"; const d = new Date(iso.length === 10 ? iso + "T12:00:00" : iso); return isNaN(d) ? iso : FMT_FECHA.format(d); }
 export function fechaHora(iso) { if (!iso) return "—"; const d = new Date(iso); return isNaN(d) ? iso : FMT_HORA.format(d); }
 export function hace(iso) {
@@ -198,5 +198,3 @@ export function pestanas(lista, alCambiar, activa) {
   return barra;
 }
 
-// traduce un pedazo de texto si la web esta en ingles (mirar js/idioma.js); en español lo deja igual
-export const T = (s) => (window.CODICE_T ? window.CODICE_T(s) : s);

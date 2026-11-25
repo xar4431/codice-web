@@ -635,13 +635,3 @@ details.tarjeta-suave[open] > summary { margin-bottom: 12px; }
   .veredicto-caja .fila .boton { flex: 1; }
 }
 
-/* boton de idioma (español / ingles) */
-.boton-idioma { margin-left: 8px; height: 44px; flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px;
-  border-radius: 10px; border: 1px solid var(--borde2); background: var(--capa); color: var(--texto); font: inherit; font-weight: 600; cursor: pointer; }
-.boton-idioma:hover { background: var(--capa2); }
-.boton-idioma .texto-idioma-corto { display: none; }
-.boton-idioma + .boton-tema { margin-left: 8px; }
-@media (max-width: 860px) { .boton-idioma { margin-left: auto; } }
-@media (max-width: 520px) { .boton-idioma { padding: 0 10px; gap: 6px; } .boton-idioma .texto-idioma-largo { display: none; } .boton-idioma .texto-idioma-corto { display: inline; } }
-/* mientras carga el diccionario en ingles escondo la pagina, si no se ve el español un segundito */
-html.traduciendo body { visibility: hidden; }
