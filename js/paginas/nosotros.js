@@ -20,7 +20,7 @@ export function mostrar(main) {
       h("section.tarjeta",
         h("h2", "Colabora"),
         h("p", "¿Trabajas en seguridad, OSINT o investigación y quieres aportar? Nos interesa tu ayuda."),
-        h("div.acciones",
+        h("div.fila-botones",
           h("a.boton.primario", { href: "#/colaborar" }, "Quiero colaborar"),
           h("a.boton", { href: "#/reportar" }, "Reportar una estafa"))))));
 }
