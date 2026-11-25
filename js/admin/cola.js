@@ -1,4 +1,4 @@
-// Cola de reportes y revisión rápida (lista a la izquierda, detalle a la derecha).
+// cola de reportes y revision rapida (la lista a la izquierda, el detalle a la derecha)
 import { panel, blobUrl, obtenerCatalogos } from "../api.js";
 import { h, vaciar, insignia, fecha, fechaHora, toast, dialogo, campo, seleccion, cargando, vacio, NIVELES, pestanas, bytes, recordarSeleccion, subirAlDetalle, volverASeleccion, T } from "../ui.js";
 import { conDeshacer, puede } from "./panel.js";
@@ -11,7 +11,7 @@ export async function mostrar(caja, [id], params) {
   const q = params.get("q") || "";
   const lista = h("div.tarjeta.lista");
   const detalle = h("div", id ? cargando() : vacio("Elige un reporte de la lista."));
-  // En el móvil el reporte abierto ocupa la pantalla; «Volver» regresa a la lista donde estabas.
+  // en el movil el reporte abierto coge toda la pantalla; «Volver» regresa a la lista donde estaba
   const volver = id ? h("a.volver.volver-lista", { href: `#/admin/cola?estado=${estado}${q ? "&q=" + encodeURIComponent(q) : ""}&sin-subir=1` }, "← Volver a la lista de reportes") : null;
   const columnaDetalle = h("div", volver, detalle);
   const seleccion = new Set();
@@ -50,7 +50,7 @@ export async function mostrar(caja, [id], params) {
     recordarSeleccion("cola", id);
     subirAlDetalle(columnaDetalle);
     await pintarDetalle(detalle, Number(id), estado);
-    subirAlDetalle(columnaDetalle); // otra vez cuando ya cargó: la página ya es lo bastante alta
+    subirAlDetalle(columnaDetalle); // otra vez cuando ya cargo, que ya la pagina es lo bastante alta
   } else volverASeleccion("cola", lista);
 }
 

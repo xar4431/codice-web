@@ -1,8 +1,8 @@
-// CODICE 1.0 · enrutador de la web pública y del panel.
+// CODICE 1.0 · el enrutador de la web publica y del panel
 import { pedir, sesion, API, SinConexion } from "./api.js";
 import { $, h, vaciar, cargando, toast } from "./ui.js";
 
-// Las páginas se piden con la edición de la web para que el navegador no use copias viejas.
+// las paginas las pido con la edicion de la web pa' que el navegador no me use copias viejas
 const E = "?e=" + ((window.CODICE_CONFIG || {}).edicion || "");
 const RUTAS = {
   "": () => import("./paginas/inicio.js" + E),
@@ -51,7 +51,7 @@ async function enrutar() {
     const modulo = await cargador();
     await modulo.mostrar(main, partes.slice(1), params);
   } catch (e) {
-    if (e instanceof SinConexion) {  // faro no responde: pantalla de mantenimiento que se recarga sola al volver
+    if (e instanceof SinConexion) {  // si faro no contesta: pantalla de mantenimiento, y se recarga sola cuando vuelva
       const { pantalla } = await import("./mantenimiento.js" + E);
       vaciar(main, pantalla());
       return;
@@ -65,8 +65,8 @@ async function enrutar() {
   contarVisita(raiz);
 }
 
-// Métricas propias de CODICE: una línea por página vista. Sin cookies ni Google; el panel no cuenta y
-// si el navegador pide «No rastrear» no se envía nada. Va como texto simple para no gastar una consulta extra.
+// metricas mias de CODICE: una linea por cada pagina vista. Sin cookies ni Google. El panel no cuenta, y
+// si el navegador tiene puesto «No rastrear» no mando na'. Va como texto simple pa' no gastar otra consulta
 let primeraVisita = true;
 function contarVisita(raiz) {
   if (raiz === "admin" || !API) return;
@@ -76,7 +76,7 @@ function contarVisita(raiz) {
   try {
     fetch(API + "/api/visita", { method: "POST", body: JSON.stringify({ r: (location.hash || "#/").split("?")[0], f: ref, a: window.innerWidth }),
       headers: { "Content-Type": "text/plain" }, credentials: "omit", mode: "cors", keepalive: true, cache: "no-store" }).catch(() => {});
-  } catch { /* sin conexión: no pasa nada */ }
+  } catch { /* sin conexion: no pasa nada */ }
 }
 
 async function franjaAlerta() {
@@ -90,7 +90,7 @@ async function franjaAlerta() {
       f.hidden = false;
     } else f.hidden = true;
     if (d.proteccion) document.body.dataset.proteccion = "1"; else delete document.body.dataset.proteccion;
-  } catch { /* sin conexión: la franja simplemente no aparece */ }
+  } catch { /* sin conexion: la franja no sale y ya */ }
 }
 
 $("#boton-menu").addEventListener("click", () => {
@@ -104,5 +104,5 @@ enrutar();
 franjaAlerta();
 setInterval(franjaAlerta, 5 * 60 * 1000);
 
-// La web ya no usa service worker (se quitó «Instalar app»): se da de baja el que quedara registrado.
+// ya no uso service worker (quite lo de «Instalar app»), asi que doy de baja el que se haya quedado registrado
 if ("serviceWorker" in navigator) navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});

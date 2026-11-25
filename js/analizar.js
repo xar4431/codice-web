@@ -1,4 +1,4 @@
-// «Analizar un mensaje»: reglas propias, sin IA de pago. Todo ocurre en el teléfono del usuario.
+// «Analizar un mensaje»: reglas mias, nada de IA de pago. Todo pasa en el telefono de la persona, no sale de ahi
 const REGLAS = [
   { id: "adelanto", peso: 3, texto: "Pide pagar o transferir por adelantado", re: /(paga|pague|transfi[eé]r|deposit|env[ií]a(me)? (el|la|los)? ?(dinero|pago|saldo)|adelanto|reserva(r)? con|separar(la|lo)? con|abono|transferm[oó]vil|enzona|zelle)/i },
   { id: "prisa", peso: 2, texto: "Mete prisa o amenaza con perder la oportunidad", re: /(urgente|hoy mismo|solo hoy|[uú]ltim[oa]s? (horas?|unidades|cupos)|r[aá]pido|ahora mismo|antes de las|se acaba|plazo|inmediat)/i },

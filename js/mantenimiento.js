@@ -1,5 +1,5 @@
-// Pantalla de «servidor en mantenimiento»: sale solo cuando la web no consigue hablar con faro.
-// Comprueba sola cada 20 segundos y, en cuanto faro responde, vuelve a cargar la página.
+// pantalla de «servidor en mantenimiento»: sale solo cuando la web no logra hablar con faro
+// prueba sola cada 20 segundos y en cuanto faro contesta recarga la pagina
 import { API } from "./api.js";
 import { h, vaciar } from "./ui.js";
 
@@ -15,7 +15,7 @@ async function faroResponde() {
   } catch { return false; } finally { clearTimeout(t); }
 }
 
-/** Pantalla completa, para las páginas que necesitan a faro (reportar, casos, cuenta, panel…). */
+/** pantalla completa, pa' las paginas que necesitan a faro si o si (reportar, casos, cuenta, panel…) */
 export function pantalla() {
   const estado = h("p.mant-estado", { "aria-live": "polite" });
   const boton = h("button.boton", { type: "button" }, "Reintentar ahora");
@@ -46,7 +46,7 @@ export function pantalla() {
 
 function detener() { clearInterval(vigilando); vigilando = null; }
 
-/** Aviso pequeño para las páginas que siguen funcionando con la copia (portada, campañas). */
+/** aviso chiquito pa' las paginas que siguen funcionando con la copia (portada, campañas) */
 export function aviso(texto = "Mostramos la última copia publicada. Reportar y ver casos volverá en cuanto termine.") {
   return h("div.mant-aviso", { role: "status" },
     h("img", { src: "img/mantenimiento.svg", alt: "", width: 96, height: 54, decoding: "async" }),

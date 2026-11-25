@@ -18,7 +18,7 @@ export async function mostrar(main, [caso]) {
       sesion.usuario ? h("p.tenue", { estilo: { marginTop: "10px" } }, "¿Lo enviaste con tu cuenta? Lo tienes en ", h("a", { href: "#/cuenta" }, "Mi cuenta"), ".") : null),
     res));
   if (caso && sesion.usuario) {
-    // Reporte propio desde «Mi cuenta»
+    // reporte propio desde «Mi cuenta»
     const yo = await pedir("/api/cuenta");
     const r = yo.cuenta.reportes.find((x) => x.codigo === caso);
     if (r) vaciar(res, h("div.tarjeta", { estilo: { marginTop: "14px" } }, h("h2", r.codigo), insignia(r.estado_nombre, "estado-" + r.estado),

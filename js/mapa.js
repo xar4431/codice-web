@@ -1,6 +1,6 @@
-// Mapa de investigación del panel (1.3): casos, datos y expedientes conectados, sin librerías ni servicios externos.
-// Formas y letras por tipo, zonas por campaña, filtros, buscador, línea de tiempo con reproducción, camino entre
-// dos puntos, aislar conexiones, fijar nodos, minimapa, pantalla grande e imagen PNG. Ratón, teclado y dedos.
+// mapa de investigacion del panel (1.3): casos, datos y expedientes conectados, sin librerias ni servicios de afuera
+// formas y letras por tipo, zonas por campaña, filtros, buscador, linea de tiempo que se reproduce, camino entre
+// dos puntos, aislar conexiones, fijar nodos, minimapa, pantalla grande e imagen PNG. Raton, teclado y dedos
 import { h, vaciar, fecha, insignia, toast, T } from "./ui.js";
 
 const NS = "http://www.w3.org/2000/svg";
@@ -37,9 +37,9 @@ function el(tag, attrs = {}) {
 
 /**
  * crearMapa(datos, opciones) → { el, recargar(datos), destruir() }
- * datos: { nodos, aristas } tal como los da /api/panel/grafo.
- * opciones.acciones(n) → elementos extra para la ficha (enlaces, botones).
- * opciones.detalle(n) → elemento o promesa con más información para la ficha.
+ * datos: { nodos, aristas } tal cual me los da /api/panel/grafo
+ * opciones.acciones(n) → cosas extra pa' la ficha (enlaces, botones)
+ * opciones.detalle(n) → elemento o promesa con mas info pa' la ficha
  */
 export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto = "No hay nada que mostrar con estos filtros." } = {}) {
   const raiz = h("div.mapa" + (grande ? ".grande" : ""));
@@ -82,7 +82,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     chips, lineaTiempo,
     h("div.mapa-cuerpo", h("div", lienzo, h("div.mapa-pie", info, leyenda)), ficha));
 
-  // --- Estado -------------------------------------------------------------------------------------
+  // --- estado -------------------------------------------------------------------------------------
   let nodos = [], lados = [], vecinos = new Map(), zonas = [];
   let W = 800, H = 480, z = { x: 0, y: 0, k: 1 }, vista = "red";
   let ocultos = new Set(), limite = Infinity, t0 = 0, t1 = 0, busq = "", hits = [], hitIdx = -1;
@@ -98,13 +98,13 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     lados = d.aristas.map((a) => ({ ...a, s: idx.get(a.a), t: idx.get(a.b) })).filter((a) => a.s && a.t);
     vecinos = new Map(nodos.map((n) => [n, new Set()]));
     for (const l of lados) { vecinos.get(l.s).add(l.t); vecinos.get(l.t).add(l.s); }
-    // Cada dato pertenece a la campaña de sus casos (si todos son de la misma).
+    // cada dato es de la campaña de sus casos (si todos son de la misma)
     for (const n of nodos) {
       if (n.clase !== "indicador") continue;
       const ks = new Set([...vecinos.get(n)].filter((m) => m.clase === "reporte").map((m) => m.campana_id || 0));
       n.campana_id = ks.size === 1 ? [...ks][0] || null : null;
     }
-    // El expediente de una campaña (y los datos que solo cuelgan de él) van dentro de la zona de esa campaña.
+    // el expediente de una campaña (y los datos que solo cuelgan de el) van dentro de la zona de esa campaña
     for (const n of nodos) {
       if (n.clase !== "expediente") continue;
       const ks = new Set([...vecinos.get(n)].filter((m) => m.clase === "reporte").map((m) => m.campana_id || 0));
@@ -117,7 +117,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     const fechas = nodos.map((n) => n.fecha && Date.parse(n.fecha)).filter(Boolean);
     t0 = fechas.length ? Math.min(...fechas) : 0; t1 = fechas.length ? Math.max(...fechas) : 0;
     lineaTiempo.hidden = !fechas.length || t0 === t1;
-    // Posiciones de partida: cada campaña en su sector, los datos junto a su primer caso.
+    // donde arranca cada cosa: cada campaña en su pedazo, los datos al lado de su primer caso
     const grupos = [...new Set(nodos.map((n) => n.campana_id || 0))];
     for (const n of nodos) {
       if (n.x !== undefined) continue;
@@ -132,7 +132,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     vaciar(ficha, h("p.tenue", nodos.length ? "Toca un caso, un dato o una zona de campaña para ver su ficha." : vacioTexto));
   }
 
-  // --- Dibujo -------------------------------------------------------------------------------------
+  // --- dibujo -------------------------------------------------------------------------------------
   function construir() {
     for (const g of [gEje, gZonas, gLados, gNodos, miniPuntos]) g.replaceChildren();
     for (const k of zonas) {
@@ -199,7 +199,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
       if (v && aislado && n !== aislado && !vecinos.get(aislado).has(n)) v = false;
       n.vis = v;
     }
-    // Un dato que se queda sin ningún caso visible (por la fecha) también se esconde.
+    // si un dato se queda sin ningun caso visible (por la fecha) tambien lo escondo
     for (const n of nodos) if (n.vis && n.clase === "indicador" && limite !== Infinity && ![...vecinos.get(n)].some((m) => m.vis && m.clase !== "indicador")) n.vis = false;
     for (const l of lados) l.vis = l.s.vis && l.t.vis;
     const vs = nodos.filter((n) => n.vis);
@@ -209,7 +209,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     objetivos();
   }
 
-  // Vista línea de tiempo: una fila por campaña, los casos por fecha y los datos debajo de sus casos.
+  // vista linea de tiempo: una fila por campaña, los casos por fecha y los datos debajo de sus casos
   let filas = [];
   function objetivos() {
     gEje.replaceChildren();
@@ -244,8 +244,8 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     });
   }
 
-  // --- Fuerzas (rejilla: solo se comparan vecinos cercanos, aguanta cientos de puntos) -------------
-  // Cada campaña tiene su sitio alrededor del centro: así las zonas no se montan unas sobre otras.
+  // --- fuerzas (rejilla: solo comparo vecinos cerca, asi aguanta cientos de puntos sin trabarse) -------------
+  // cada campaña tiene su lugar alrededor del centro, asi las zonas no se montan una arriba de la otra
   let anclas = new Map();
   function ponerAnclas() {
     anclas = new Map();
@@ -350,7 +350,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     miniVista.setAttribute("x", x1); miniVista.setAttribute("y", y1); miniVista.setAttribute("width", x2 - x1); miniVista.setAttribute("height", y2 - y1);
   }
 
-  // --- Vista: mover, acercar, ajustar ------------------------------------------------------------
+  // --- vista: mover, acercar, ajustar ------------------------------------------------------------
   function zoomEn(f, px = W / 2, py = H / 2) {
     const k = Math.max(0.15, Math.min(4, z.k * f));
     z.x = px - ((px - z.x) * k) / z.k; z.y = py - ((py - z.y) * k) / z.k; z.k = k; pintar();
@@ -429,7 +429,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     z.x = W / 2 - wx * z.k; z.y = H / 2 - wy * z.k; pintar();
   });
 
-  // --- Selección, ficha, camino ------------------------------------------------------------------
+  // --- seleccion, ficha, camino ------------------------------------------------------------------
   function limpiarSeleccion() {
     sel = null; camino = []; modoCamino = false; pintar();
     vaciar(ficha, h("p.tenue", "Toca un caso, un dato o una zona de campaña para ver su ficha."));
@@ -492,7 +492,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     toast("Mostrando solo esta campaña. Toca «Ajustar» o cambia un filtro para volver.", "info", 4000);
   }
 
-  // --- Barra: buscador, vista, filtros, tiempo, pantalla grande, PNG ----------------------------
+  // --- barra: buscador, vista, filtros, tiempo, pantalla grande, PNG ----------------------------
   function pintarChips() {
     const cuentas = {};
     for (const n of nodos) cuentas[clase(n)] = (cuentas[clase(n)] || 0) + 1;
@@ -562,7 +562,7 @@ export function crearMapa(datos, { acciones, detalle, grande = false, vacioTexto
     img.src = url;
   }
 
-  // --- Tamaño --------------------------------------------------------------------------------------
+  // --- tamaño --------------------------------------------------------------------------------------
   const medir = () => {
     const r = svg.getBoundingClientRect();
     if (!r.width) return false;

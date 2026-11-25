@@ -1,6 +1,6 @@
-// Grafo interactivo sin librerías: disposición por fuerzas, arrastrar, acercar y tocar nodos.
+// el grafo hecho a mano, sin librerias: fuerzas, arrastrar, acercar y tocar nodos
 const NS = "http://www.w3.org/2000/svg";
-// Los colores salen de las variables de la hoja de estilos, así el grafo cambia solo con el modo claro u oscuro.
+// los colores los saco de las variables del css, asi el grafo cambia solo cuando cambio a claro u oscuro
 const COLOR_ARISTA = { fuerte: "var(--rojo)", intermedia: "var(--ambar)", debil: "var(--verde)", indicador: "var(--grafo-neutro)", ninguna: "var(--grafo-neutro)" };
 const COLOR_NODO = { reporte: "var(--azul)", caso: "var(--azul)", telefono: "var(--ambar)", referencia_pago: "var(--rojo)", url: "var(--violeta)",
   dominio: "var(--violeta)", perfil: "var(--verde)", correo: "var(--amarillo)", otro: "var(--suave)", indicador: "var(--ambar)" };
@@ -8,7 +8,7 @@ const COLOR_NODO = { reporte: "var(--azul)", caso: "var(--azul)", telefono: "var
 function el(tag, attrs = {}) {
   const e = document.createElementNS(NS, tag);
   for (const [k, v] of Object.entries(attrs)) {
-    if (k === "fill" || k === "stroke") e.style[k] = v; // como estilo: así acepta var(--…)
+    if (k === "fill" || k === "stroke") e.style[k] = v; // como estilo, asi acepta var(--…)
     else e.setAttribute(k, v);
   }
   return e;
@@ -27,7 +27,7 @@ export function dibujarGrafo(svg, { nodos, aristas }, { alTocar, etiquetas = tru
     indice.set(n.id, Object.assign(n, { x: ancho / 2 + r * Math.cos(a) + Math.random() * 10, y: alto / 2 + r * Math.sin(a) + Math.random() * 10, vx: 0, vy: 0 }));
   });
   const lados = aristas.map((a) => ({ ...a, s: indice.get(a.a), t: indice.get(a.b) })).filter((a) => a.s && a.t);
-  // Simulación de fuerzas (resortes + repulsión), unos cientos de pasos.
+  // simulacion de fuerzas (resortes + repulsion), unos cientos de pasos nada mas
   const k = Math.sqrt((ancho * alto) / Math.max(1, nodos.length)) * 0.6;
   for (let paso = 0; paso < 260; paso++) {
     const temp = 1 - paso / 260;
@@ -81,7 +81,7 @@ export function dibujarGrafo(svg, { nodos, aristas }, { alTocar, etiquetas = tru
     for (const [g, n] of grupos) g.setAttribute("transform", `translate(${n.x},${n.y})`);
   };
   actualizar();
-  // Mover y acercar (ratón y dedos).
+  // mover y acercar (con raton y con los dedos)
   let vista = { x: 0, y: 0, z: 1 }, arrastre = null, nodoArrastrado = null;
   const aplicar = () => capa.setAttribute("transform", `translate(${vista.x},${vista.y}) scale(${vista.z})`);
   const punto = (e) => { const r = svg.getBoundingClientRect(); return { x: (e.clientX - r.left) * (ancho / r.width), y: (e.clientY - r.top) * (alto / r.height) }; };

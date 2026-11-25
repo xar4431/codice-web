@@ -1,12 +1,12 @@
-// CODICE · idioma de la web (español por defecto, inglés opcional).
-// Se carga en <head>. Si la persona eligió inglés, traduce toda la pantalla (web pública y panel) con el
-// diccionario js/i18n/en.json, y sigue traduciendo lo que aparece después (avisos, ventanas, tablas…).
-// Lo que escribe la gente (descripciones de casos, comentarios, tickets) queda en su idioma original.
+// CODICE · idioma de la web (español por defecto, ingles si lo eligen)
+// esto carga en el <head>. Si eligieron ingles traduce toda la pantalla (web publica y panel) con el
+// diccionario js/i18n/en.json, y sigue traduciendo lo que va saliendo despues (avisos, ventanas, tablas…)
+// OJO: lo que escribe la gente (descripciones, comentarios, tickets) se queda como lo escribieron, eso no se toca
 (function () {
   var CLAVE = "codice.idioma";
   var raiz = document.documentElement;
   var idioma = "es";
-  try { if (localStorage.getItem(CLAVE) === "en") idioma = "en"; } catch (e) { /* sin almacenamiento */ }
+  try { if (localStorage.getItem(CLAVE) === "en") idioma = "en"; } catch (e) { /* sin almacenamiento, sigue */ }
   window.CODICE_IDIOMA = idioma;
   window.CODICE_LOCALE = idioma === "en" ? "en-US" : "es";
   raiz.setAttribute("lang", idioma);
@@ -40,10 +40,10 @@
     return;
   }
 
-  // ---------- Modo inglés ----------
+  // ---------- modo ingles ----------
   raiz.classList.add("traduciendo");
   var listo = false;
-  var exacto = null;   // Map: texto español normalizado -> inglés
+  var exacto = null;   // Map: texto en español normalizado -> ingles
   var patrones = [];   // [{pista, re, sal}]
   var ATRIBUTOS = ["placeholder", "title", "aria-label", "alt"];
   var NO_TOCAR = { SCRIPT: 1, STYLE: 1, TEXTAREA: 1, CODE: 1, PRE: 1, NOSCRIPT: 1 };
@@ -125,7 +125,7 @@
     var t = dic.t || {};
     for (var k in t) if (Object.prototype.hasOwnProperty.call(t, k)) exacto.set(k, t[k]);
     (dic.p || []).forEach(function (p) {
-      try { patrones.push({ pista: p[2] || "", re: new RegExp(p[0]), sal: p[1] }); } catch (e) { /* patrón roto: se ignora */ }
+      try { patrones.push({ pista: p[2] || "", re: new RegExp(p[0]), sal: p[1] }); } catch (e) { /* patron roto: lo salto */ }
     });
     listo = true;
     window.CODICE_T = function (s) {
@@ -149,7 +149,7 @@
     raiz.classList.remove("traduciendo");
   }
 
-  // Ventanas nativas del navegador (confirmar, pedir contraseña, avisos)
+  // las ventanitas del navegador (confirmar, pedir contraseña, avisos)
   ["confirm", "alert", "prompt"].forEach(function (f) {
     var orig = window[f];
     if (!orig) return;
@@ -168,7 +168,7 @@
     .then(function (r) { if (!r.ok) throw new Error("sin diccionario"); return r.json(); })
     .catch(function () { return null; });
 
-  // Si el diccionario tarda, se muestra la página igualmente (en español) para no dejarla en blanco.
+  // si el diccionario se demora enseño la pagina igual (en español), no la voy a dejar en blanco
   setTimeout(function () { raiz.classList.remove("traduciendo"); }, 2500);
 
   document.addEventListener("DOMContentLoaded", function () {

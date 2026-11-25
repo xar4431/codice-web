@@ -38,5 +38,5 @@ export async function mostrar(caja, [id], params) {
     h("div.pila", { estilo: { marginTop: "14px" } }, h("div.fila", sel, asignado), texto,
       h("div.fila", h("button.boton.primario", { type: "button", onclick: () => enviar(null) }, "Responder"), h("button.boton", { type: "button", onclick: () => enviar("cerrado") }, "Responder y cerrar"),
         t.estado === "cerrado" ? h("button.boton.fantasma", { type: "button", onclick: () => enviar("abierto") }, "Reabrir") : h("button.boton.fantasma", { type: "button", onclick: () => { texto.value = ""; enviar("cerrado"); } }, "Cerrar sin responder")))));
-  subirAlDetalle(columnaDetalle); // otra vez cuando ya cargó
+  subirAlDetalle(columnaDetalle); // otra vez cuando ya cargo
 }

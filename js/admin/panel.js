@@ -1,9 +1,9 @@
-// Panel de admin y moderación: acceso con doble verificación y navegación interna.
+// panel de admin y moderacion: entrada con doble verificacion y la navegacion de adentro
 import { panel, pedir, sesion, ErrorApi } from "../api.js";
 import { h, vaciar, campo, toast, cargando, icono, copiar } from "../ui.js";
 import { iniciar as iniciarAvisos, detener as detenerAvisos, pintarContadores, botonAjustes } from "./notificador.js";
 
-// Las pantallas se piden con la edición de la web para que el navegador no use copias viejas.
+// las pantallas las pido con la edicion de la web pa' que el navegador no use copias viejas
 const E = "?e=" + ((window.CODICE_CONFIG || {}).edicion || "");
 const SECCIONES = {
   "": ["Tareas", () => import("./hoy.js" + E)],
@@ -36,11 +36,11 @@ export async function mostrar(main, partes, params) {
   iniciarAvisos();
   const seccion = SECCIONES[partes[0] || ""] ? partes[0] || "" : "";
   const [, cargar, permiso] = SECCIONES[seccion];
-  // Quien investiga puede abrir un caso concreto aunque no modere la cola.
+  // el que investiga puede abrir un caso concreto aunque no modere la cola
   const permitido = puede(permiso) || (seccion === "cola" && partes[1] && puede("investigar"));
   if (!permitido) { toast("No tienes permiso para esa sección.", "error"); location.hash = "#/admin"; return; }
   const contenido = h("div", cargando());
-  // En el móvil el menú se desliza de lado: al cambiar de sección se queda donde estaba.
+  // en el movil el menu se desliza de lado: al cambiar de seccion se queda donde estaba
   const antes = main.querySelector(".panel-lateral")?.scrollLeft || 0;
   const menu = lateral(seccion);
   vaciar(main, h("div.panel", menu, h("div", barra(), contenido)));
@@ -100,7 +100,7 @@ function enlace(x) {
 
 async function salir() {
   detenerAvisos();
-  try { await panel("/salir", { metodo: "POST" }); } catch { /* */ }
+  try { await panel("/salir", { metodo: "POST" }); } catch { /* na' */ }
   sesion.panel = null; yo = null; location.hash = "#/";
 }
 
@@ -157,7 +157,7 @@ function segundoPaso(main, caja, r) {
   cod.focus();
 }
 
-// Utilidad compartida por las secciones: acción con «Deshacer».
+// utilidad que usan todas las secciones: accion con «Deshacer»
 export function conDeshacer(texto, idDeshacer, alDeshacer) {
   const ids = Array.isArray(idDeshacer) ? idDeshacer : [idDeshacer];
   toast(texto, "ok", 10000, { texto: "Deshacer", fn: async () => {

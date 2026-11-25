@@ -1,6 +1,6 @@
-// Modo claro / oscuro. Se carga en <head> antes de pintar la página para que no haya parpadeo.
-// La página es SIEMPRE oscura por defecto, tenga el equipo el modo que tenga.
-// Si la persona cambia a claro (o vuelve a oscuro), su elección se guarda en este navegador.
+// modo claro / oscuro. Carga en el <head> antes de pintar la pagina pa' que no parpadee
+// la pagina SIEMPRE arranca oscura, no importa lo que tenga puesto el equipo
+// si cambian a claro (o vuelven a oscuro) se guarda en ese navegador
 (function () {
   var CLAVE = "codice.tema";
   var raiz = document.documentElement;
@@ -24,7 +24,7 @@
 
   function cambiar() {
     var nuevo = actual() === "claro" ? "oscuro" : "claro";
-    try { localStorage.setItem(CLAVE, nuevo); } catch (e) { /* sin almacenamiento: solo dura esta visita */ }
+    try { localStorage.setItem(CLAVE, nuevo); } catch (e) { /* sin almacenamiento: dura solo esta visita */ }
     aplicar(nuevo);
   }
 

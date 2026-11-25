@@ -1,6 +1,6 @@
-// Investigaciones: bandeja y expediente único para casos, campañas y ataques.
-// Todo el equipo trabaja igual: hallazgos con el mismo formato, datos con ficha compartida, cadena de custodia
-// y veredicto aprobado por una segunda persona. Sin enlaces ni conexiones a servicios externos.
+// investigaciones: la bandeja y un solo expediente pa' casos, campañas y ataques
+// todo el equipo trabaja igualito: hallazgos con el mismo formato, datos con ficha compartida, cadena de custodia
+// y veredicto que tiene q aprobar una segunda persona. Nada de enlaces ni conexiones a servicios de afuera
 import { panel, descargar, blobUrl } from "../api.js";
 import { crearMapa } from "../mapa.js";
 import { h, vaciar, insignia, fecha, fechaHora, hace, toast, campo, cargando, vacio, dialogo, confirmar, pedirTexto, pestanas, copiar, bytes, T } from "../ui.js";
@@ -27,7 +27,7 @@ export async function mostrar(caja, [id], params) {
   return bandeja(caja, params);
 }
 
-// --- Bandeja -------------------------------------------------------------------------------------
+// --- bandeja -------------------------------------------------------------------------------------
 
 async function bandeja(caja, params) {
   const vista = params.get("vista") || "mias";
@@ -93,7 +93,7 @@ async function nuevo() {
   return r;
 }
 
-// --- Expediente ----------------------------------------------------------------------------------
+// --- expediente ----------------------------------------------------------------------------------
 
 async function expediente(caja, id, pestanaInicial) {
   const d = await panel(`/investigaciones/${id}`);
@@ -185,7 +185,7 @@ async function proponer(x, cat, id, recargar) {
     } }] });
 }
 
-// Resumen: título, prioridad, resumen, casos y lista de verificación.
+// resumen: titulo, prioridad, resumen, casos y la lista de comprobar
 function seccionResumen(x, cat, id, recargar, abierta) {
   const titulo = h("input", { type: "text", value: x.titulo, maxlength: 160 });
   const prioridad = h("select", Object.entries(PRIORIDADES).map(([k, t]) => h("option", { value: k }, t)));
@@ -207,7 +207,7 @@ function seccionResumen(x, cat, id, recargar, abierta) {
 }
 const cifra = (n, t) => h("div.cifra-mini", h("b", String(n)), h("span", t));
 
-// Hallazgos: siempre qué, cómo y con cuánta confianza.
+// hallazgos: siempre que, como y con cuanta confianza
 function seccionHallazgos(x, cat, id, recargar, abierta) {
   const form = abierta ? formHallazgo(cat, null, async (datos) => { await panel(`/investigaciones/${id}/hallazgos`, { metodo: "POST", datos }); toast("Hallazgo añadido.", "ok"); recargar("hallazgos"); }) : null;
   return h("div.pila",
@@ -254,7 +254,7 @@ function formHallazgo(cat, previo, enviar, cancelar) {
     h("span.tenue.mini", "Escribe @usuario para avisar a alguien del equipo.")));
 }
 
-// Datos: lo que aportan los casos y lo que añade el equipo, con su ficha compartida.
+// datos: lo que traen los casos y lo que añade el equipo, con su ficha compartida
 function seccionDatos(x, cat, id, recargar, abierta) {
   const zonaPegar = h("div");
   const privado = puede("datos_privados");
@@ -324,7 +324,7 @@ function vistaPrevia(caja, lineas, cat, id, recargar) {
     } }, `Añadir los marcados`)));
 }
 
-// Cadena de custodia: archivo guardado en faro o solo su huella calculada en tu equipo.
+// cadena de custodia: el archivo guardado en faro o solo la huella calculada en el equipo de quien lo sube
 function seccionCustodia(x, id, recargar, abierta) {
   const archivo = h("input", { type: "file", accept: "image/jpeg,image/png,image/webp,application/pdf,video/mp4,video/webm,audio/ogg,audio/mpeg" });
   const desc = h("input", { type: "text", maxlength: 1000, placeholder: "Qué es: «Captura del SMS recibido el 12/11»" });
@@ -397,7 +397,7 @@ async function abrirPrueba(p) {
   } catch (e) { toast(e.message, "error"); }
 }
 
-// Mapa del expediente: sus casos, sus datos y todo lo que comparten con el resto de CODICE.
+// mapa del expediente: sus casos, sus datos y todo lo que comparten con el resto de CODICE
 function seccionMapa(x, id, recargar, abierta) {
   const hueco = h("div", cargando("Dibujando el mapa…"));
   panel(`/grafo?centro=investigacion:${id}&profundidad=2`).then((g) => {
@@ -418,7 +418,7 @@ function seccionMapa(x, id, recargar, abierta) {
   return h("div.pila", hueco, h("a.boton.chico.fantasma", { href: `#/admin/investigacion?centro=investigacion:${id}` }, "Abrir en el mapa completo"));
 }
 
-// Comentarios del equipo (con @menciones) e historial de todo lo que se hizo.
+// comentarios del equipo (con @menciones) e historial de todo lo que se hizo
 function seccionNotas(x, id, recargar) {
   const t = h("textarea", { rows: 3, maxlength: 3000, placeholder: "Comentario para el equipo. Escribe @usuario para avisarle con la burbuja roja." });
   return h("div.dos",

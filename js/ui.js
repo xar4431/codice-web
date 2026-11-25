@@ -1,4 +1,4 @@
-// Utilidades de interfaz. Todo el texto se inserta como texto (nunca como HTML) para evitar inyecciones.
+// utilidades de la interfaz. OJO: todo el texto entra como texto, nunca como HTML, pa' que no me metan inyecciones
 
 export function h(etiqueta, attrs, ...hijos) {
   const [tag, ...clases] = etiqueta.split(".");
@@ -27,7 +27,7 @@ function anadir(el, hijos) {
 }
 
 export function seguroUrl(u) {
-  // Solo rutas internas, https, datos de imagen y blobs. Nada de javascript:
+  // solo rutas de adentro, https, datos de imagen y blobs. Nada de javascript: ni cosas raras
   if (/^(#|\/(?!\/)|https:\/\/|data:image\/|blob:|mailto:)/i.test(u)) return u;
   if (/^[a-z0-9_-][a-z0-9_./-]*$/i.test(u) && !u.includes("..")) return u;
   return "#";
@@ -133,9 +133,9 @@ export function bytes(n) {
   if (n == null) return "—"; const u = ["B", "KB", "MB", "GB", "TB"]; let i = 0; let v = Number(n);
   while (v >= 1024 && i < u.length - 1) { v /= 1024; i++; } return `${v.toFixed(v < 10 && i ? 1 : 0)} ${u[i]}`;
 }
-// Pantallas «lista + detalle» en el móvil: el detalle se ve solo y arriba; al volver, la lista regresa al elemento abierto.
-const esMovil = () => matchMedia("(max-width: 1200px)").matches; // móvil y portátil pequeño
-export function recordarSeleccion(clave, id) { try { sessionStorage.setItem("codice.sel." + clave, String(id)); } catch (e) { /* sin almacenamiento */ } }
+// pantallas «lista + detalle» en el movil: el detalle se ve solo y arriba; al volver la lista regresa a lo que tenia abierto
+const esMovil = () => matchMedia("(max-width: 1200px)").matches; // movil y portatil chiquito
+export function recordarSeleccion(clave, id) { try { sessionStorage.setItem("codice.sel." + clave, String(id)); } catch (e) { /* sin almacenamiento, sigue */ } }
 export function subirAlDetalle(el) {
   if (!esMovil()) return;
   requestAnimationFrame(() => window.scrollTo(0, Math.max(0, el.getBoundingClientRect().top + window.scrollY - 76)));
@@ -143,11 +143,11 @@ export function subirAlDetalle(el) {
 export function volverASeleccion(clave, lista) {
   if (!esMovil()) return;
   let id = null;
-  try { id = sessionStorage.getItem("codice.sel." + clave); } catch (e) { /* sin almacenamiento */ }
+  try { id = sessionStorage.getItem("codice.sel." + clave); } catch (e) { /* sin almacenamiento, sigue */ }
   const enlace = id && [...lista.querySelectorAll("a[href]")].find((a) => new RegExp(`/${id}(\\?|$)`).test(a.getAttribute("href")));
   if (!enlace) return;
   const li = enlace.closest("li");
-  li.classList.add("seleccionado"); // marca el último que leíste
+  li.classList.add("seleccionado"); // marca el ultimo que lei
   requestAnimationFrame(() => li.scrollIntoView({ block: "center" }));
 }
 
@@ -198,5 +198,5 @@ export function pestanas(lista, alCambiar, activa) {
   return barra;
 }
 
-// Traduce un trozo de texto si la web está en inglés (ver js/idioma.js); en español lo deja igual.
+// traduce un pedazo de texto si la web esta en ingles (mirar js/idioma.js); en español lo deja igual
 export const T = (s) => (window.CODICE_T ? window.CODICE_T(s) : s);

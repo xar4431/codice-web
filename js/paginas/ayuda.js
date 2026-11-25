@@ -19,7 +19,7 @@ function nuevoTicket(conCuenta, caso, caja) {
   const captchaImg = h("img", { alt: "Código de seguridad", width: 220, height: 72 });
   const captcha = h("input", { type: "text", name: "captcha", autocomplete: "off", maxlength: 8, estilo: { maxWidth: "160px" } });
   let captchaId = null;
-  const recargar = async () => { try { const c = await pedir("/api/captcha"); captchaId = c.id; captchaImg.src = c.imagen; captcha.value = ""; } catch { /* sin conexión */ } };
+  const recargar = async () => { try { const c = await pedir("/api/captcha"); captchaId = c.id; captchaImg.src = c.imagen; captcha.value = ""; } catch { /* sin conexion */ } };
   if (!conCuenta) recargar();
   const form = h("form.tarjeta", { onsubmit: async (e) => {
     e.preventDefault();

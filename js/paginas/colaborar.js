@@ -9,7 +9,7 @@ export async function mostrar(main) {
   const captchaImg = h("img", { alt: "Código de seguridad", width: 220, height: 72 });
   const captcha = h("input", { type: "text", name: "captcha", autocomplete: "off", maxlength: 8, estilo: { maxWidth: "160px" } });
   let captchaId = null;
-  const recargar = async () => { try { const c = await pedir("/api/captcha"); captchaId = c.id; captchaImg.src = c.imagen; captcha.value = ""; } catch { /* */ } };
+  const recargar = async () => { try { const c = await pedir("/api/captcha"); captchaId = c.id; captchaImg.src = c.imagen; captcha.value = ""; } catch { /* na' */ } };
   if (!conCuenta) recargar();
   const clave = h("input", { type: "text", placeholder: "Código privado de tu solicitud" });
   const estado = h("div");

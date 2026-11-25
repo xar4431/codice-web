@@ -1,7 +1,7 @@
 <!doctype html><html lang="es"><head><meta charset="utf-8"><title>CODICE</title>
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'sha256-pAuRKFvm6fExuVT/FtatEweDHnZIZMxp0cz/cDxdPKE='">
-<script>// Enlaces como codicecuba.org/caso/CDX-26-ABCDE se llevan a la ruta interna #/caso/...
-// Funciona en el dominio propio y en usuario.github.io/codice-web/ (subcarpeta).
+<script>// si alguien entra por codicecuba.org/caso/CDX-26-ABCDE lo mando pa' la ruta de adentro #/caso/...
+// ojo: esto tiene q funcionar en el dominio y tambien en usuario.github.io/codice-web/ (la subcarpeta)
 (function () {
   var partes = location.pathname.replace(/^\/+/, "").split("/");
   var base = "/";

@@ -15,7 +15,7 @@ export async function mostrar(main, _p, params) {
   const d0 = new Date();
   const hoy = `${d0.getFullYear()}-${String(d0.getMonth() + 1).padStart(2, "0")}-${String(d0.getDate()).padStart(2, "0")}`;
 
-  // Paso 1 · Qué pasó
+  // paso 1 · que paso
   const fechaInp = h("input", { type: "date", name: "fecha_incidente", max: hoy, value: hoy });
   const precision = seleccion("fecha_precision", cat.precisiones, "dia", { vacioTexto: null });
   const prov = seleccion("provincia", Object.fromEntries(cat.provincias.map((p) => [p.codigo, p.nombre])));
@@ -33,7 +33,7 @@ export async function mostrar(main, _p, params) {
     h("div.campo", h("label", "¿Por dónde te contactaron?"), canal, h("div.error", { datos: { campo: "canal" } })),
     campo("Tipo de estafa", tipo), campo("¿A quién decían representar? (opcional)", entidad));
 
-  // Paso 2 · Datos del estafador
+  // paso 2 · datos del estafador
   const listaInd = h("div.pila");
   const nuevoInd = () => {
     const fila = { tipo: "telefono", valor: "" };
@@ -63,7 +63,7 @@ export async function mostrar(main, _p, params) {
     h("strong", "No pongas tus propios datos.")), listaInd,
     h("button.boton", { type: "button", onclick: nuevoInd }, "+ Añadir otro dato"), h("div.error", { datos: { campo: "indicadores" } }));
 
-  // Paso 3 · Descripción y pruebas
+  // paso 3 · descripcion y pruebas
   const desc = h("textarea", { name: "descripcion", maxlength: 5000, placeholder: "Cuenta qué te dijeron, qué te pidieron y qué pasó después. No incluyas tu nombre, tu número ni datos de otras personas." });
   const contador = h("div.ayuda", "0 / 5000");
   desc.addEventListener("input", () => { contador.textContent = `${desc.value.length} / 5000`; });
@@ -95,13 +95,13 @@ export async function mostrar(main, _p, params) {
       h("p.ayuda", "Consejo: antes de subir una captura, tapa tu nombre y tu número con el editor de fotos del móvil. Moderación también revisa y tapa datos antes de publicar. ",
         h("a", { href: "#/guia", target: "_blank" }, "Ver cómo"))));
 
-  // Paso 4 · Enviar
+  // paso 4 · enviar
   const consentimiento = h("input", { type: "checkbox", name: "consentimiento" });
   const vincular = h("input", { type: "checkbox", checked: true });
   const captchaImg = h("img", { alt: "Código de seguridad: escribe los caracteres de la imagen", width: 220, height: 72 });
   const captchaInp = h("input", { type: "text", name: "captcha", autocomplete: "off", autocapitalize: "characters", maxlength: 8, inputmode: "text", estilo: { maxWidth: "160px" } });
   let captchaId = null;
-  const nuevoCaptcha = async () => { try { const c = await pedir("/api/captcha"); captchaId = c.id; captchaImg.src = c.imagen; captchaInp.value = ""; } catch { /* sin conexión */ } };
+  const nuevoCaptcha = async () => { try { const c = await pedir("/api/captcha"); captchaId = c.id; captchaImg.src = c.imagen; captchaInp.value = ""; } catch { /* sin conexion */ } };
   const trampa = h("div.trampa", { "aria-hidden": "true" }, h("label", "No rellenar", h("input", { type: "text", name: "sitio_web", tabindex: "-1", autocomplete: "off" })));
   const progreso = h("div.progreso", { hidden: true }, h("div"));
   const paso4 = h("div.pila",

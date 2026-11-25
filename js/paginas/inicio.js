@@ -53,7 +53,7 @@ export async function mostrar(main) {
   }
 }
 
-// Banner de la portada: faro animado, palabra que cambia y cifras que suben al cargar.
+// banner de la portada: faro animado, la palabra que cambia y los numeros que suben al cargar
 function banner(entrada, cifras) {
   const palabras = ["número", "enlace", "perfil", "tarjeta"];
   return h("section.banner", { "aria-label": "Presentación de CODICE" },

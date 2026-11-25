@@ -1,5 +1,5 @@
-// Buscador con la copia publicada en GitHub: funciona aunque faro esté apagado.
-// La copia no contiene los valores en claro, solo huellas (SHA-256) de los valores normalizados.
+// buscador con la copia que esta publicada en GitHub: funciona aunque faro este apagado
+// ojo: la copia NO tiene los valores en claro, solo las huellas (SHA-256) de los valores ya normalizados
 let copia = null;
 
 async function cargar() {

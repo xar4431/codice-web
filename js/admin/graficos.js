@@ -1,11 +1,11 @@
-// Gráficas del panel (métricas y seguridad): barras interactivas que funcionan con ratón, dedo y teclado.
+// graficas del panel (metricas y seguridad): barras que funcionan con raton, dedo y teclado
 import { h, vaciar } from "../ui.js";
 
 const NUM = new Intl.NumberFormat((window.CODICE_LOCALE || "es"));
 export const num = (n) => NUM.format(Number(n) || 0);
 
 let paises = null;
-try { paises = new Intl.DisplayNames([(window.CODICE_LOCALE || "es")], { type: "region" }); } catch { /* navegador antiguo */ }
+try { paises = new Intl.DisplayNames([(window.CODICE_LOCALE || "es")], { type: "region" }); } catch { /* navegador viejo */ }
 export function nombrePais(codigo) {
   if (!codigo) return "Desconocido";
   try { return paises?.of(codigo) || codigo; } catch { return codigo; }
@@ -14,8 +14,8 @@ export function nombrePais(codigo) {
 export const EQUIPOS = { movil: "Móvil", pc: "PC", tableta: "Tableta" };
 
 /**
- * Barras verticales. serie: [{etiqueta, detalle, partes: [{valor, color, nombre}]}]
- * Al pasar el ratón, tocar o enfocar una barra se ve su detalle arriba; tocar otra vez la deja fija.
+ * barras verticales. serie: [{etiqueta, detalle, partes: [{valor, color, nombre}]}]
+ * al pasar el raton, tocar o enfocar una barra sale su detalle arriba; si la toco otra vez se queda fija
  */
 export function grafico(serie, { resumen, bajo = false, ejes } = {}) {
   const info = h("div.grafico-info", { "aria-live": "polite" });
@@ -28,7 +28,7 @@ export function grafico(serie, { resumen, bajo = false, ejes } = {}) {
   const barras = h("div.grafico-barras", serie.map((b) => {
     const t = total(b);
     const boton = h("button.gbarra" + (t ? "" : ".cero"), { type: "button", "aria-label": `${b.etiqueta}: ${b.partes.map((p) => `${p.valor} ${p.nombre}`).join(", ")}` },
-      // De arriba abajo: la última parte va arriba.
+      // de arriba pa' abajo: la ultima parte va arriba
       (t ? b.partes.slice().reverse().filter((p) => p.valor > 0) : b.partes.slice(0, 1)).map((p) => h("i", { estilo: { height: t ? `${(p.valor / max) * 100}%` : "2px", background: p.color } })));
     const elegir = () => { detalle(b); barras.classList.add("con-seleccion"); barras.querySelectorAll(".activa").forEach((x) => x.classList.remove("activa")); boton.classList.add("activa"); };
     boton.addEventListener("mouseenter", elegir);
@@ -41,7 +41,7 @@ export function grafico(serie, { resumen, bajo = false, ejes } = {}) {
     barras.classList.remove("con-seleccion"); barras.querySelectorAll(".activa").forEach((x) => x.classList.remove("activa")); mostrarResumen();
   });
   mostrarResumen();
-  // Con pocas barras cada una lleva su nombre debajo; con muchas, solo unas cuantas marcas repartidas.
+  // con pocas barras cada una lleva su nombre debajo; con muchas solo unas cuantas marcas repartidas
   const alineado = !ejes && serie.length <= 12;
   const marcas = ejes || (alineado ? serie.map((b) => b.corta || b.etiqueta) : puntosEje(serie.map((b) => b.corta || b.etiqueta)));
   return h("div.grafico", info,
@@ -59,7 +59,7 @@ export function leyenda(items) {
   return h("div.leyenda", items.map(([nombre, color]) => h("span", h("i", { estilo: { background: color } }), nombre)));
 }
 
-/** Lista de barras horizontales: [{nombre, valor, detalle}] */
+/** lista de barras horizontales: [{nombre, valor, detalle}] */
 export function barrasH(filas, { color = "var(--primario)", vacio = "Sin datos todavía.", total } = {}) {
   if (!filas?.length) return h("p.tenue", vacio);
   const max = Math.max(1, ...filas.map((f) => f.valor));

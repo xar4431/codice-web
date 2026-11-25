@@ -1,4 +1,4 @@
-// Servidor → Seguridad: semáforo, incidentes, bloqueos y sesiones del panel. Todo ocurre dentro de faro.
+// Servidor → Seguridad: semaforo, incidentes, bloqueos y sesiones del panel. Todo pasa dentro de faro
 import { panel, blobUrl, ErrorApi } from "../api.js";
 import { h, vaciar, insignia, fechaHora, hace, toast, cargando, vacio, confirmar, campo, T } from "../ui.js";
 import { puede } from "./panel.js";
@@ -187,7 +187,7 @@ const VISTA = {
   },
 };
 
-// Una barra por hora con su número encima (en el móvil no hay «pasar el ratón») y un resumen debajo.
+// una barra por hora con su numero arriba (en el movil no hay «pasar el raton») y un resumen debajo
 function intentosPorHora(filas) {
   if (!filas?.length) return h("p.tenue", "Ninguno.");
   const max = Math.max(...filas.map((f) => f.intentos));

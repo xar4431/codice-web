@@ -1,6 +1,6 @@
-// Avisos del panel: todo lo nuevo se acumula en la campana con una burbuja roja (también lo que llegó
-// mientras no estabas) y, con el panel abierto, suena: «ding» suave para tareas, dos tonos graves para el
-// servidor y pulsos urgentes para señales de ataque. Nada sale del panel: sin avisos al móvil ni correos.
+// avisos del panel: todo lo nuevo se acumula en la campana con la burbuja roja (tambien lo que llego
+// mientras no estaba) y con el panel abierto suena: «ding» suavecito pa' tareas, dos tonos graves pa'l
+// servidor y pulsos urgentes si huele a ataque. Nada sale del panel: ni avisos al movil ni correos
 import { panel } from "../api.js";
 import { h, vaciar, icono, dialogo, hace } from "../ui.js";
 
@@ -14,10 +14,10 @@ let temporizador = null, conocidos = null, contadores = {}, sinVer = 0, caja = n
 export function preferencias() {
   try { return { ...DEFECTO, ...JSON.parse(localStorage.getItem(CLAVE) || "{}") }; } catch { return { ...DEFECTO }; }
 }
-function guardar(p) { try { localStorage.setItem(CLAVE, JSON.stringify(p)); } catch { /* sin almacenamiento */ } }
+function guardar(p) { try { localStorage.setItem(CLAVE, JSON.stringify(p)); } catch { /* sin almacenamiento, sigue */ } }
 
 
-// --- Sonidos ------------------------------------------------------------------------------------
+// --- sonidos ------------------------------------------------------------------------------------
 let ctx = null, salida = null;
 function audio() {
   if (!ctx) {
@@ -30,7 +30,7 @@ function audio() {
   }
   return ctx;
 }
-// El navegador solo deja sonar después de que la persona toque la página una vez.
+// el navegador solo deja sonar despues que la persona toque la pagina una vez, eso es asi
 ["pointerdown", "keydown", "touchstart"].forEach((ev) => document.addEventListener(ev, () => { const a = audio(); if (a && a.state === "suspended") a.resume(); }, { passive: true }));
 
 function nota(a, frec, t, dur, { tipo = "sine", vol = 0.3, hasta = null } = {}) {
@@ -46,16 +46,16 @@ function nota(a, frec, t, dur, { tipo = "sine", vol = 0.3, hasta = null } = {}) 
 }
 
 const SONIDOS = {
-  // Dos notas ascendentes, limpias, con un brillo suave encima: «tienes algo nuevo».
+  // dos notas que suben, limpias, con un brillito arriba: «tienes algo nuevo»
   tarea(a, t) {
     nota(a, 784, t, 0.55, { vol: 0.32 }); nota(a, 1568, t, 0.35, { vol: 0.05 });
     nota(a, 1046.5, t + 0.16, 0.9, { vol: 0.3 }); nota(a, 2093, t + 0.16, 0.5, { vol: 0.045 });
   },
-  // Dos tonos graves que bajan, dos veces: «algo va mal en el servidor».
+  // dos tonos graves que bajan, dos veces: «algo anda mal en el servidor»
   servidor(a, t) {
     for (const d of [0, 0.75]) { nota(a, 523.25, t + d, 0.32, { tipo: "triangle", vol: 0.38 }); nota(a, 392, t + d + 0.3, 0.42, { tipo: "triangle", vol: 0.38 }); }
   },
-  // Pulsos cortos y agudos, dos rachas: «posible ataque».
+  // pulsos cortos y agudos, dos rachas: «posible ataque», candela
   ataque(a, t) {
     for (const d of [0, 0.62]) {
       [0, 0.13, 0.26].forEach((x, i) => nota(a, i === 2 ? 1174.7 : 880, t + d + x, 0.11, { tipo: "square", vol: 0.16 }));
@@ -75,7 +75,7 @@ export function sonar(tipo, forzar = false) {
   return true;
 }
 
-// --- Tarjetas emergentes ----------------------------------------------------------------------------
+// --- tarjetas que saltan ----------------------------------------------------------------------------
 const ESTILO = {
   tarea: { icono: "bandeja", titulo: "Tarea nueva" },
   servidor: { icono: "servidor", titulo: "Aviso del servidor" },
@@ -84,7 +84,7 @@ const ESTILO = {
 
 function mostrarAviso(tipo, titulo, texto, { ir, grave = false, detalle, abrirLista = false } = {}) {
   if (!caja || !caja.isConnected) { caja = h("div.avisos-panel", { role: "region", "aria-label": "Avisos", "aria-live": "polite" }); document.body.append(caja); }
-  // En el PC, justo debajo de la cabecera (y de la franja roja si está), sin tapar el menú de arriba.
+  // en la PC justo debajo de la cabecera (y de la franja roja si esta), sin tapar el menu de arriba
   const cab = document.querySelector(".cabecera")?.getBoundingClientRect();
   caja.style.top = window.innerWidth >= 600 && cab ? `${Math.max(0, cab.bottom) + 12}px` : "";
   const cerrar = () => { tarjeta.classList.add("saliendo"); setTimeout(() => tarjeta.remove(), 220); };
@@ -99,7 +99,7 @@ function mostrarAviso(tipo, titulo, texto, { ir, grave = false, detalle, abrirLi
   if (!grave) setTimeout(cerrar, tipo === "tarea" ? 9000 : 16000);
 }
 
-// --- Consulta cada 20 segundos ---------------------------------------------------------------------
+// --- consulta cada 20 segundos ---------------------------------------------------------------------
 async function consultar() {
   if (!location.hash.startsWith("#/admin")) { detener(); return; }
   let d;
@@ -110,7 +110,7 @@ async function consultar() {
   pintarContadores();
   const nuevos = ultimos.filter((a) => a.nuevo);
   if (!conocidos) {
-    // Al entrar al panel: lo acumulado se ve en la burbuja roja y en un resumen, sin sonar.
+    // al entrar al panel lo acumulado se ve en la burbuja roja y en un resumen, sin sonar
     conocidos = new Set(nuevos.map((a) => a.clave));
     if (sinVer) mostrarAviso(nuevos.some((a) => a.tipo === "ataque") ? "ataque" : nuevos.some((a) => a.tipo === "servidor") ? "servidor" : "tarea",
       `Tienes ${sinVer} ${sinVer === 1 ? "aviso nuevo" : "avisos nuevos"}`, resumen(nuevos), { abrirLista: abrirLista });
@@ -119,7 +119,7 @@ async function consultar() {
   const recien = nuevos.filter((a) => !conocidos.has(a.clave));
   recien.forEach((a) => conocidos.add(a.clave));
   if (!recien.length) return;
-  // Un solo sonido por consulta: el del aviso más grave, que queda arriba del todo.
+  // un solo sonido por consulta: el del aviso mas grave, que queda arriba del todo
   recien.sort((a, b) => PRIORIDAD[a.tipo] - PRIORIDAD[b.tipo]);
   const principal = recien[recien.length - 1];
   recien.slice(0, -1).slice(-3).forEach((a) => mostrarAviso(a.tipo, a.titulo, a.texto, { ir: a.ir, grave: a.grave }));
@@ -134,7 +134,7 @@ function resumen(lista) {
     .filter(([x]) => x).map(([x, uno, varios]) => `${x} ${x === 1 ? uno : varios}`).join(" · ");
 }
 
-/** Burbuja roja de la campana, números del menú y título de la pestaña. */
+/** burbuja roja de la campana, numeritos del menu y titulo de la pestaña */
 export function pintarContadores() {
   const b = document.querySelector(".boton-campana .burbuja");
   if (b) { b.hidden = !sinVer; b.textContent = sinVer > 99 ? "99+" : String(sinVer); }
@@ -164,7 +164,7 @@ export function detener() {
   document.title = tituloBase.replace(/^\(\d+\)\s*/, "");
 }
 
-// --- Campana: lista de avisos ---------------------------------------------------------------------------
+// --- campana: lista de avisos ---------------------------------------------------------------------------
 export function botonAjustes() {
   return h("button.boton-campana", { type: "button", title: "Avisos", "aria-label": "Avisos", onclick: abrirLista },
     icono("campana", 20), h("span.burbuja", { hidden: !sinVer }, sinVer > 99 ? "99+" : String(sinVer)));
@@ -173,7 +173,7 @@ export function botonAjustes() {
 async function abrirLista() {
   const lista = ultimos.slice();
   const habia = sinVer;
-  // Abrir la campana marca todo como visto (en todos tus dispositivos); los nuevos se siguen resaltando aquí.
+  // abrir la campana marca todo como visto (en todos mis equipos); lo nuevo se sigue resaltando aqui
   sinVer = 0; pintarContadores();
   panel("/novedades/vistas", { metodo: "POST" }).catch(() => {});
   lista.filter((a) => a.nuevo).forEach((a) => conocidos?.add(a.clave));

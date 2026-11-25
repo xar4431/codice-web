@@ -1,4 +1,4 @@
-// Comunicación con faro (la API) a través del túnel cifrado.
+// aqui es donde se habla con faro (la API) por el tunel cifrado
 const CFG = window.CODICE_CONFIG || {};
 export const API = (CFG.api || "").replace(/\/+$/, "");
 
@@ -10,7 +10,7 @@ export class SinConexion extends ErrorApi {
 }
 
 function leer(almacen, clave) { try { return almacen.getItem(clave); } catch { return null; } }
-function guardar(almacen, clave, v) { try { v ? almacen.setItem(clave, v) : almacen.removeItem(clave); } catch { /* sin almacenamiento */ } }
+function guardar(almacen, clave, v) { try { v ? almacen.setItem(clave, v) : almacen.removeItem(clave); } catch { /* sin almacenamiento, sigue */ } }
 
 export const sesion = {
   get usuario() { return leer(localStorage, "codice.token"); },
@@ -50,7 +50,7 @@ export async function pedir(ruta, { metodo = "GET", datos, panel = false, crudo 
 
 export const panel = (ruta, opciones = {}) => pedir("/api/panel" + ruta, { ...opciones, panel: true });
 
-// Envío con barra de progreso (subida de pruebas).
+// envio con barra de progreso (pa' cuando suben pruebas)
 export function subir(ruta, formData, alProgreso, { panel: esPanel = false } = {}) {
   return new Promise((resolver, rechazar) => {
     const x = new XMLHttpRequest();
@@ -60,7 +60,7 @@ export function subir(ruta, formData, alProgreso, { panel: esPanel = false } = {
     x.upload.onprogress = (e) => { if (e.lengthComputable) alProgreso?.(e.loaded / e.total); };
     x.onload = () => {
       let d = null;
-      try { d = JSON.parse(x.responseText); } catch { /* respuesta no JSON */ }
+      try { d = JSON.parse(x.responseText); } catch { /* la respuesta no vino en JSON */ }
       if (x.status >= 200 && x.status < 300) resolver(d);
       else rechazar(new ErrorApi(d?.error || `Error ${x.status}`, x.status, d?.campos));
     };
@@ -69,7 +69,7 @@ export function subir(ruta, formData, alProgreso, { panel: esPanel = false } = {
   });
 }
 
-// Descarga de archivos protegidos (expedientes, originales) con el token del panel.
+// pa' bajar los archivos protegidos (expedientes, originales) con el token del panel
 export async function descargar(ruta, nombre) {
   const r = await pedir(ruta, { panel: true, crudo: true });
   const blob = await r.blob();

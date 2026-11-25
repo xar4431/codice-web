@@ -1,4 +1,4 @@
-// Importar casos de fuentes públicas (solo admin). Los casos entran como pendientes en «Reportes».
+// importar casos de fuentes publicas (solo yo, el admin). Entran como pendientes en «Reportes» y los reviso a mano
 import { panel, ErrorApi } from "../api.js";
 import { h, vaciar, toast, campo, insignia, fecha, vacio } from "../ui.js";
 

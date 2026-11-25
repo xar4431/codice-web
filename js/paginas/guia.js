@@ -1,7 +1,7 @@
 import { h, vaciar, insignia } from "../ui.js";
 
 const S = (titulo, ...cuerpo) => h("section.tarjeta", h("h2", titulo), ...cuerpo);
-// Recorte pequeño de ejemplo (los marcados «EJEMPLO» usan datos inventados).
+// recorte chiquito de ejemplo (los que dicen «EJEMPLO» llevan datos inventados)
 const R = (archivo, ancho, alto, alt) => h("img.recorte", { src: `img/guia/${archivo}.webp`, width: ancho, height: alto, alt, loading: "lazy", decoding: "async" });
 
 export function mostrar(main) {

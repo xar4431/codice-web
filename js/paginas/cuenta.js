@@ -36,7 +36,7 @@ function acceso(main) {
     const captchaImg = h("img", { alt: "Código de seguridad", width: 220, height: 72 });
     const cap = h("input", { type: "text", name: "captcha", autocomplete: "off", maxlength: 8, estilo: { maxWidth: "160px" } });
     let capId = null;
-    const recargar = async () => { try { const x = await pedir("/api/captcha"); capId = x.id; captchaImg.src = x.imagen; cap.value = ""; } catch { /* */ } };
+    const recargar = async () => { try { const x = await pedir("/api/captcha"); capId = x.id; captchaImg.src = x.imagen; cap.value = ""; } catch { /* na' */ } };
     recargar();
     const trampa = h("input", { type: "text", name: "sitio_web", tabindex: "-1", autocomplete: "off" });
     const f = h("form", { onsubmit: async (e) => {

@@ -1,4 +1,4 @@
-// Campañas: sugerencias automáticas, veredicto, posibles responsables, expedientes.
+// campañas: sugerencias automaticas, veredicto, posibles responsables, expedientes
 import { panel, descargar } from "../api.js";
 import { crearMapa } from "../mapa.js";
 import { h, vaciar, insignia, fecha, fechaHora, toast, campo, pestanas, vacio, pedirTexto, confirmar, dialogo, cargando } from "../ui.js";

@@ -1,10 +1,10 @@
-// Apartado «Métricas»: visitas de la web pública en tiempo real (sin Google ni cookies; el panel no cuenta).
+// apartado «Metricas»: visitas de la web publica en tiempo real (sin Google ni cookies, el panel no cuenta)
 import { panel, ErrorApi } from "../api.js";
 import { h, vaciar, cargando, fecha } from "../ui.js";
 import { grafico, leyenda, barrasH, kpi, cambio, num, nombrePais, EQUIPOS } from "./graficos.js";
 
 const PERIODOS = [["24h", "24 horas"], ["7d", "7 días"], ["30d", "30 días"]];
-const CADA = 15000; // se actualiza sola cada 15 s mientras la pestaña está a la vista
+const CADA = 15000; // se actualiza sola cada 15 s mientras la pestaña esta a la vista
 const DIA = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { weekday: "short", day: "numeric", month: "short" });
 const DIA_CORTO = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { day: "numeric", month: "short" });
 const HORA = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { hour: "2-digit", minute: "2-digit" });
@@ -28,7 +28,7 @@ export async function mostrar(caja) {
 
   async function cargar(primera = false) {
     if (!caja.isConnected) { clearInterval(temporizador); return; }
-    // No se actualiza mientras la pestaña está oculta ni mientras miras el detalle de una barra.
+    // no actualizo si la pestaña esta escondida ni mientras estoy mirando el detalle de una barra
     if (!primera && (document.hidden || cuerpo.querySelector(".con-seleccion"))) return;
     if (primera) vaciar(cuerpo, cargando());
     try {
@@ -116,7 +116,7 @@ function pintar(cuerpo, d, periodo, serieDe, alCambiarSerie) {
     h("p.tenue.mini", { estilo: { marginTop: "14px" } }, "Se actualiza sola cada 15 segundos."));
 }
 
-// Las redes envían a veces dominios intermedios (l.wl.co es WhatsApp; lm.facebook.com, Facebook…).
+// ojo: las redes a veces mandan dominios intermedios (l.wl.co es WhatsApp; lm.facebook.com es Facebook…)
 const ORIGENES = [[/(^|\.)(wa\.me|whatsapp\.com|l\.wl\.co|wl\.co)$/, "WhatsApp"], [/(^|\.)(facebook\.com|fb\.com|fb\.me)$/, "Facebook"],
   [/(^|\.)(t\.me|telegram\.org|telegram\.me)$/, "Telegram"], [/(^|\.)(instagram\.com)$/, "Instagram"], [/(^|\.)(x\.com|t\.co|twitter\.com)$/, "X (Twitter)"],
   [/(^|\.)(youtube\.com|youtu\.be)$/, "YouTube"], [/(^|\.)tiktok\.com$/, "TikTok"], [/(^|\.)google\.[a-z.]+$/, "Google"], [/(^|\.)bing\.com$/, "Bing"], [/(^|\.)duckduckgo\.com$/, "DuckDuckGo"]];

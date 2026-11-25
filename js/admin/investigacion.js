@@ -1,4 +1,4 @@
-// Mapa: casos, datos y expedientes conectados. Desde aquí se centra, se amplía y se abre la ficha de cada cosa.
+// mapa: casos, datos y expedientes conectados. Desde aqui centro, amplio y abro la ficha de cada cosa
 import { panel } from "../api.js";
 import { crearMapa } from "../mapa.js";
 import { h, vaciar, fecha, fechaHora, toast, campo, cargando, insignia, T } from "../ui.js";
@@ -55,7 +55,7 @@ function acciones(n, centrar) {
   return n.clave ? [h("button.boton.chico.fantasma", { type: "button", onclick: () => centrar(`indicador:${n.clave}`) }, "Centrar aquí")] : [];
 }
 
-// Ficha ampliada de un dato: historial, expedientes, situación compartida y notas.
+// ficha grande de un dato: historial, expedientes, situacion compartida y notas
 async function detalle(n) {
   if (n.clase !== "indicador") return null;
   if (!n.clave) return h("p.tenue.mini", "Tu rol no permite ver el valor completo de este dato.");
