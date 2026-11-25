@@ -15,12 +15,13 @@ const RUTAS = {
   cuenta: () => import("./paginas/cuenta.js" + E),
   ayuda: () => import("./paginas/ayuda.js" + E),
   colaborar: () => import("./paginas/colaborar.js" + E),
+  nosotros: () => import("./paginas/nosotros.js" + E),
   guia: () => import("./paginas/guia.js" + E),
   privacidad: () => import("./paginas/privacidad.js" + E),
   admin: () => import("./admin/panel.js"),
 };
 
-const MENU = [["#/", "¿Es estafa?"], ["#/campanas", "Campañas"], ["#/casos", "Casos"], ["#/guia", "Guía"],
+const MENU = [["#/", "¿Es estafa?"], ["#/campanas", "Campañas"], ["#/casos", "Casos"], ["#/nosotros", "Nosotros"], ["#/guia", "Guía"],
   ["#/ayuda", "Ayuda"], ["#/cuenta", "Mi cuenta"], ["#/reportar", "Reportar", "destacado"]];
 
 function pintarMenu(ruta) {
