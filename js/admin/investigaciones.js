@@ -3,7 +3,7 @@
 // y veredicto aprobado por una segunda persona. Sin enlaces ni conexiones a servicios externos.
 import { panel, descargar, blobUrl } from "../api.js";
 import { crearMapa } from "../mapa.js";
-import { h, vaciar, insignia, fecha, fechaHora, hace, toast, campo, cargando, vacio, dialogo, confirmar, pedirTexto, pestanas, copiar, bytes } from "../ui.js";
+import { h, vaciar, insignia, fecha, fechaHora, hace, toast, campo, cargando, vacio, dialogo, confirmar, pedirTexto, pestanas, copiar, bytes, T } from "../ui.js";
 import { puede, yo } from "./panel.js";
 import { detalleDato } from "./investigacion.js";
 
@@ -318,7 +318,7 @@ function vistaPrevia(caja, lineas, cat, id, recargar) {
       if (!items.length) { toast("No hay datos marcados.", "error"); return; }
       try {
         const r = await panel(`/investigaciones/${id}/datos`, { metodo: "POST", datos: { items } });
-        toast(`${r.anadidos} datos añadidos${r.errores.length ? ` · ${r.errores.length} con error` : ""}.`, r.errores.length ? "error" : "ok", 6000);
+        toast(`${r.anadidos} ${T("datos añadidos")}${r.errores.length ? ` · ${r.errores.length} ${T("con error")}` : ""}.`, r.errores.length ? "error" : "ok", 6000);
         recargar("datos");
       } catch (e) { toast(e.message, "error"); }
     } }, `Añadir los marcados`)));

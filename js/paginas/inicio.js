@@ -81,7 +81,7 @@ function contar(el, fin) {
   const inicio = performance.now(), dura = 1400;
   const paso = (ahora) => {
     const x = Math.min(1, (ahora - inicio) / dura), suave = 1 - Math.pow(1 - x, 3);
-    el.textContent = Math.round(fin * suave).toLocaleString("es");
+    el.textContent = Math.round(fin * suave).toLocaleString((window.CODICE_LOCALE || "es"));
     if (x < 1) requestAnimationFrame(paso);
   };
   requestAnimationFrame(paso);

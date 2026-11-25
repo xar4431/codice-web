@@ -1,14 +1,13 @@
 // Modo claro / oscuro. Se carga en <head> antes de pintar la página para que no haya parpadeo.
-// La elección se guarda en este navegador; si nunca se eligió, se sigue el modo del teléfono o la computadora.
+// La página es SIEMPRE oscura por defecto, tenga el equipo el modo que tenga.
+// Si la persona cambia a claro (o vuelve a oscuro), su elección se guarda en este navegador.
 (function () {
   var CLAVE = "codice.tema";
   var raiz = document.documentElement;
-  var sistema = window.matchMedia ? window.matchMedia("(prefers-color-scheme: light)") : null;
 
   function guardado() {
     try { var v = localStorage.getItem(CLAVE); return v === "claro" || v === "oscuro" ? v : null; } catch (e) { return null; }
   }
-  function delSistema() { return sistema && sistema.matches ? "claro" : "oscuro"; }
 
   function aplicar(tema) {
     if (tema === "claro") raiz.setAttribute("data-tema", "claro"); else raiz.removeAttribute("data-tema");
@@ -29,14 +28,8 @@
     aplicar(nuevo);
   }
 
-  aplicar(guardado() || delSistema());
+  aplicar(guardado() || "oscuro");
 
-  // Si la persona nunca eligió, seguimos los cambios del sistema (por ejemplo, modo oscuro automático de noche).
-  if (sistema) {
-    var alCambiar = function () { if (!guardado()) aplicar(delSistema()); };
-    if (sistema.addEventListener) sistema.addEventListener("change", alCambiar);
-    else if (sistema.addListener) sistema.addListener(alCambiar);
-  }
 
   document.addEventListener("DOMContentLoaded", function () {
     var boton = document.getElementById("boton-tema");

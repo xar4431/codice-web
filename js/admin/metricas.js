@@ -5,11 +5,11 @@ import { grafico, leyenda, barrasH, kpi, cambio, num, nombrePais, EQUIPOS } from
 
 const PERIODOS = [["24h", "24 horas"], ["7d", "7 días"], ["30d", "30 días"]];
 const CADA = 15000; // se actualiza sola cada 15 s mientras la pestaña está a la vista
-const DIA = new Intl.DateTimeFormat("es", { weekday: "short", day: "numeric", month: "short" });
-const DIA_CORTO = new Intl.DateTimeFormat("es", { day: "numeric", month: "short" });
-const HORA = new Intl.DateTimeFormat("es", { hour: "2-digit", minute: "2-digit" });
-const MES = new Intl.DateTimeFormat("es", { month: "long", year: "numeric" });
-const MES_CORTO = new Intl.DateTimeFormat("es", { month: "short" });
+const DIA = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { weekday: "short", day: "numeric", month: "short" });
+const DIA_CORTO = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { day: "numeric", month: "short" });
+const HORA = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { hour: "2-digit", minute: "2-digit" });
+const MES = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { month: "long", year: "numeric" });
+const MES_CORTO = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { month: "short" });
 const TIPOS = { telefono: "Teléfono", perfil: "Perfil", url: "Enlace", dominio: "Dominio", correo: "Correo", referencia_pago: "Tarjeta o cuenta de cobro", otro: "Otro" };
 
 let temporizador = null;

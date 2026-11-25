@@ -1,11 +1,11 @@
 // Gráficas del panel (métricas y seguridad): barras interactivas que funcionan con ratón, dedo y teclado.
 import { h, vaciar } from "../ui.js";
 
-const NUM = new Intl.NumberFormat("es");
+const NUM = new Intl.NumberFormat((window.CODICE_LOCALE || "es"));
 export const num = (n) => NUM.format(Number(n) || 0);
 
 let paises = null;
-try { paises = new Intl.DisplayNames(["es"], { type: "region" }); } catch { /* navegador antiguo */ }
+try { paises = new Intl.DisplayNames([(window.CODICE_LOCALE || "es")], { type: "region" }); } catch { /* navegador antiguo */ }
 export function nombrePais(codigo) {
   if (!codigo) return "Desconocido";
   try { return paises?.of(codigo) || codigo; } catch { return codigo; }

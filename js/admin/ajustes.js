@@ -1,7 +1,7 @@
 import { panel } from "../api.js";
-import { h, vaciar, toast, campo, vacio } from "../ui.js";
+import { h, vaciar, toast, campo, vacio, T } from "../ui.js";
 
-const HORA = new Intl.DateTimeFormat("es", { weekday: "short", hour: "2-digit", minute: "2-digit" });
+const HORA = new Intl.DateTimeFormat((window.CODICE_LOCALE || "es"), { weekday: "short", hour: "2-digit", minute: "2-digit" });
 
 export async function mostrar(caja) {
   const r = await panel("/ajustes");
@@ -27,7 +27,7 @@ export async function mostrar(caja) {
     h("div.portada",
       h("div.pila",
         h("section.tarjeta" + (a.modo_proteccion ? ".resultado.riesgo-alto" : ""), h("h2", "Modo protección"), h("p.suave", "Interruptor de emergencia ante una avalancha de trolls: mientras esté activo, solo se puede reportar con cuenta. La web muestra un aviso amable."),
-          a.modo_proteccion && escudo.auto ? h("p.aviso.atencion", `Lo activó solo el escudo automático por una avalancha de reportes${escudo.hasta ? `; se apaga solo el ${HORA.format(new Date(escudo.hasta))}` : ""}.`) : null,
+          a.modo_proteccion && escudo.auto ? h("p.aviso.atencion", `${T("Lo activó solo el escudo automático por una avalancha de reportes")}${escudo.hasta ? `; ${T("se apaga solo el")} ${HORA.format(new Date(escudo.hasta))}` : ""}.`) : null,
           h("label.casilla", prot, h("span", h("strong", "Activar modo protección"))),
           h("button.boton" + (a.modo_proteccion ? "" : ".peligro"), { type: "button", onclick: async () => { await panel("/proteccion", { metodo: "POST", datos: { activo: !a.modo_proteccion } }); toast("Modo protección " + (a.modo_proteccion ? "desactivado." : "activado."), "ok"); mostrar(caja); } },
             a.modo_proteccion ? "Desactivar ahora" : "Activar ahora")),

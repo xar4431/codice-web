@@ -635,16 +635,13 @@ details.tarjeta-suave[open] > summary { margin-bottom: 12px; }
   .veredicto-caja .fila .boton { flex: 1; }
 }
 
-/* Botón «Instalar app» (web instalable) */
-.boton-instalar { margin-left: 8px; height: 44px; flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px;
-  border-radius: 10px; border: 1px solid var(--primario); background: transparent; color: var(--texto); font: inherit; font-weight: 600; cursor: pointer; }
-.boton-instalar:hover { background: var(--capa2); }
-.boton-instalar[hidden] { display: none; }
-.boton-instalar:not([hidden]) + .boton-tema { margin-left: 4px; }
-@media (max-width: 860px) { .boton-instalar { margin-left: auto; } .boton-instalar:not([hidden]) + .boton-tema { margin-left: 8px; } }
-@media (max-width: 520px) { .boton-instalar { width: 44px; padding: 0; justify-content: center; } .boton-instalar .texto-instalar { display: none; } }
-.pasos-instalar { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
-.paso-instalar { display: flex; gap: 12px; align-items: flex-start; }
-.num-paso { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--primario); color: var(--sobre-primario);
-  display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: .9rem; }
-.pie-instalar { margin: 10px 0; } .pie-instalar[hidden] { display: none; }
+/* Botón de idioma (español / inglés) */
+.boton-idioma { margin-left: 8px; height: 44px; flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px;
+  border-radius: 10px; border: 1px solid var(--borde2); background: var(--capa); color: var(--texto); font: inherit; font-weight: 600; cursor: pointer; }
+.boton-idioma:hover { background: var(--capa2); }
+.boton-idioma .texto-idioma-corto { display: none; }
+.boton-idioma + .boton-tema { margin-left: 8px; }
+@media (max-width: 860px) { .boton-idioma { margin-left: auto; } }
+@media (max-width: 520px) { .boton-idioma { padding: 0 10px; gap: 6px; } .boton-idioma .texto-idioma-largo { display: none; } .boton-idioma .texto-idioma-corto { display: inline; } }
+/* Mientras se carga el diccionario en inglés no se muestra el español un instante */
+html.traduciendo body { visibility: hidden; }

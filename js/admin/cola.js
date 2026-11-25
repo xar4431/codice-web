@@ -1,6 +1,6 @@
 // Cola de reportes y revisión rápida (lista a la izquierda, detalle a la derecha).
 import { panel, blobUrl, obtenerCatalogos } from "../api.js";
-import { h, vaciar, insignia, fecha, fechaHora, toast, dialogo, campo, seleccion, cargando, vacio, NIVELES, pestanas, bytes, recordarSeleccion, subirAlDetalle, volverASeleccion } from "../ui.js";
+import { h, vaciar, insignia, fecha, fechaHora, toast, dialogo, campo, seleccion, cargando, vacio, NIVELES, pestanas, bytes, recordarSeleccion, subirAlDetalle, volverASeleccion, T } from "../ui.js";
 import { conDeshacer, puede } from "./panel.js";
 
 const ESTADOS = [["pendiente", "Pendientes"], ["cambios", "Esperan cambios"], ["aprobado", "Publicados"], ["rechazado", "Rechazados"], ["retirado", "Retirados"], ["duplicado", "Duplicados"]];
@@ -88,7 +88,7 @@ async function pintarDetalle(caja, id, estado) {
       h("div.aviso", { estilo: { whiteSpace: "pre-wrap" } }, r.descripcion),
       r.fuente ? h("p", insignia("Fuente pública", "azul"), " ", h("a", { href: r.fuente, target: "_blank", rel: "noopener noreferrer" }, r.fuente)) : null,
       r.entidad ? h("p", "Suplanta a: ", h("strong", r.entidad)) : null,
-      r.fuente ? h("p.tenue", "Caso importado por el admin desde una fuente pública.") : h("p.tenue", r.autor ? `Enviado con cuenta: ${r.autor.usuario}${r.autor.confianza !== undefined ? ` · confianza ${r.autor.confianza}` : ""}` : "Enviado sin cuenta",
+      r.fuente ? h("p.tenue", "Caso importado por el admin desde una fuente pública.") : h("p.tenue", r.autor ? `${T("Enviado con cuenta:")} ${r.autor.usuario}${r.autor.confianza !== undefined ? ` · ${T("confianza")} ${r.autor.confianza}` : ""}` : "Enviado sin cuenta",
         r.repetido_origen ? ` · ${r.repetido_origen} reportes más desde la misma conexión esta semana` : "", r.caso_padre ? ` · se suma al caso ${r.caso_padre}` : ""),
       r.autor?.id && puede("revisar") ? h("div.fila", h("a.boton.chico", { href: `#/admin/usuarios/${r.autor.id}` }, "Ver usuario")) : null,
       !r.autor && !r.fuente && puede("sancionar") ? h("div.fila", h("button.boton.chico.peligro", { type: "button", onclick: () => bloquearConexion(id, r.codigo) }, "Bloquear esta conexión"),
@@ -189,7 +189,7 @@ async function bloquearConexion(id, codigo) {
   if (!ok) return;
   try {
     const x = await panel(`/reportes/${id}/bloquear-origen`, { metodo: "POST", datos: { duracion: dur.value, motivo: motivo.value } });
-    toast(`Conexión bloqueada${x.con_ip ? "" : " (solo por hoy: ya no quedaba su IP)"}.${x.otros_pendientes ? ` Hay ${x.otros_pendientes} reportes pendientes más desde ella.` : ""}`, "ok", 7000);
+    toast(`${T("Conexión bloqueada")}${x.con_ip ? "" : T(" (solo por hoy: ya no quedaba su IP)")}.${x.otros_pendientes ? ` ${T("Hay")} ${x.otros_pendientes} ${T("reportes pendientes más desde ella.")}` : ""}`, "ok", 7000);
   } catch (e) { toast(e.estado === 404 ? "Esto necesita faro 1.2." : e.message, "error"); }
 }
 

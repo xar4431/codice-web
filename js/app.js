@@ -103,3 +103,6 @@ window.addEventListener("codice:panel-caducado", () => { sesion.panel = null; to
 enrutar();
 franjaAlerta();
 setInterval(franjaAlerta, 5 * 60 * 1000);
+
+// La web ya no usa service worker (se quitó «Instalar app»): se da de baja el que quedara registrado.
+if ("serviceWorker" in navigator) navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});
