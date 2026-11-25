@@ -644,8 +644,8 @@ details.tarjeta-suave[open] > summary { margin-bottom: 12px; }
   border-radius: 10px; border: 1px solid var(--borde2); background: var(--capa); color: var(--texto); font: inherit; font-weight: 600; cursor: pointer; }
 .boton-app:hover { border-color: var(--primario); }
 .boton-app[hidden] { display: none; }
-.boton-app + .boton-tema { margin-left: 8px; }
-@media (max-width: 860px) { .boton-app { margin-left: auto; } .boton-app + .boton-tema { margin-left: 8px; } }
+.boton-app:not([hidden]) + .boton-tema { margin-left: 8px; }
+@media (max-width: 860px) { .boton-app:not([hidden]) { margin-left: auto; } .boton-app:not([hidden]) + .boton-tema { margin-left: 8px; } }
 @media (max-width: 520px) { .boton-app { padding: 0 10px; } .boton-app .texto-app { display: none; } }
 
 /* ventanita con las instrucciones para añadirlo a la pantalla de inicio */
