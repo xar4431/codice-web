@@ -635,3 +635,24 @@ details.tarjeta-suave[open] > summary { margin-bottom: 12px; }
   .veredicto-caja .fila .boton { flex: 1; }
 }
 
+
+/* boton «Abrir como app»: pone CODICE en la pantalla de inicio (no instala nada) */
+.boton-app { height: 44px; flex: none; display: inline-flex; align-items: center; gap: 8px; padding: 0 14px;
+  border-radius: 10px; border: 1px solid var(--borde2); background: var(--capa); color: var(--texto); font: inherit; font-weight: 600; cursor: pointer; }
+.boton-app:hover { border-color: var(--primario); }
+.boton-app[hidden] { display: none; }
+.boton-app + .boton-tema { margin-left: 8px; }
+@media (max-width: 860px) { .boton-app { margin-left: auto; } .boton-app + .boton-tema { margin-left: 8px; } }
+@media (max-width: 520px) { .boton-app { padding: 0 10px; } .boton-app .texto-app { display: none; } }
+
+/* ventanita con las instrucciones para añadirlo a la pantalla de inicio */
+.capa-app { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 20px;
+  background: rgba(0,0,0,.55); }
+.capa-app-tarjeta { background: var(--capa); color: var(--texto); border: 1px solid var(--borde2); border-radius: 14px;
+  box-shadow: var(--sombra); max-width: 420px; width: 100%; padding: 22px; }
+.capa-app-tarjeta h2 { margin: 0 0 10px; font-size: 1.15rem; }
+.capa-app-tarjeta p { margin: 0 0 12px; color: var(--suave); line-height: 1.5; }
+.capa-app-tarjeta p b { color: var(--texto); }
+.capa-app-ok { margin-top: 4px; width: 100%; height: 44px; border: none; border-radius: 10px; cursor: pointer;
+  background: var(--primario); color: var(--sobre-primario); font: inherit; font-weight: 700; }
+.capa-app-ok:hover { filter: brightness(1.05); }
