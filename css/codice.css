@@ -114,7 +114,10 @@ main:focus { outline: none; }
 /* en pantallas chiquitas los botones con texto largo bajan de linea, si no se salen */
 .boton, button.boton { max-width: 100%; white-space: normal; text-align: center; padding-top: 6px; padding-bottom: 6px; }
 /* codigos, enlaces y datos largos se cortan dentro de su caja, que no me la estiren */
-main a, main .indicador, main code, .elemento .crece { overflow-wrap: anywhere; }
+main a, main .indicador, main code, .elemento .crece { overflow-wrap: break-word; }
+/* filas compactas (historial, ficha, alertas): que nada se parta letra a letra; se apilan si no caben */
+.elemento.pequeno { flex-wrap: wrap; align-items: baseline; row-gap: 2px; }
+.elemento.pequeno .crece { min-width: min-content; overflow-wrap: break-word; }
 .tabla .indicador, .tabla code { white-space: nowrap; overflow-wrap: normal; } /* en las tablas el dato va completo, la tabla se desliza y ya */
 label { display: block; font-weight: 600; margin-bottom: 6px; font-size: .95rem; }
 .campo { margin-bottom: 14px; }
@@ -368,7 +371,7 @@ body.modo-panel .dividido { grid-template-columns: minmax(300px, 400px) minmax(0
 .kpis { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(160px, 100%), 1fr)); margin-bottom: 14px; }
 .kpi { background: var(--capa); border: 1px solid var(--borde); border-radius: 14px; padding: 14px 16px; min-width: 0; }
 .kpi span { display: block; color: var(--suave); font-size: .85rem; }
-.kpi b { display: block; font: 700 1.7rem var(--mono); margin: 2px 0; overflow-wrap: anywhere; }
+.kpi b { display: block; font: 700 1.7rem var(--mono); margin: 2px 0; overflow-wrap: break-word; }
 .kpi small { color: var(--tenue); font-size: .8rem; }
 .kpi small.sube { color: var(--verde-texto); }
 .kpi small.baja { color: var(--rojo-texto); }
@@ -405,13 +408,13 @@ body.modo-panel .dividido { grid-template-columns: minmax(300px, 400px) minmax(0
 .semaforo ul { margin: 0; padding-left: 18px; color: var(--suave); }
 .semaforo-datos { grid-column: 1 / -1; display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(140px, 100%), 1fr)); }
 .semaforo-datos > div { background: var(--capa2); border-radius: 12px; padding: 10px 12px; min-width: 0; }
-.semaforo-datos b { display: block; font: 700 1.15rem var(--mono); overflow-wrap: anywhere; }
+.semaforo-datos b { display: block; font: 700 1.15rem var(--mono); overflow-wrap: break-word; }
 .semaforo-datos span { color: var(--suave); font-size: .82rem; }
 .texto-plano { white-space: pre; overflow: auto; max-height: 60vh; font: .76rem/1.55 var(--mono); background: var(--entrada); border: 1px solid var(--borde); border-radius: 12px; padding: 12px; margin: 0; color: var(--texto); }
 .incidente { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 12px; padding: 12px 4px; align-items: start; }
 .incidente .punto { margin-top: 7px; }
-.incidente p { margin: 0; overflow-wrap: anywhere; }
-.incidente .meta { color: var(--suave); font-size: .84rem; overflow-wrap: anywhere; }
+.incidente p { margin: 0; overflow-wrap: break-word; }
+.incidente .meta { color: var(--suave); font-size: .84rem; overflow-wrap: break-word; }
 .formulario-bloqueo { display: grid; gap: 10px 12px; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
 .formulario-bloqueo > * { min-width: 0; }
 .formulario-bloqueo .ancho { grid-column: 1 / -1; }
@@ -446,7 +449,7 @@ body.modo-panel .dividido { grid-template-columns: minmax(300px, 400px) minmax(0
 .notif.n-ataque .notif-icono { background: rgba(240, 68, 56, .15); color: var(--rojo); }
 .notif-cuerpo { min-width: 0; }
 .notif-cuerpo strong { display: block; font-size: .95rem; }
-.notif-cuerpo p { margin: 2px 0 0; color: var(--suave); font-size: .9rem; overflow-wrap: anywhere; }
+.notif-cuerpo p { margin: 2px 0 0; color: var(--suave); font-size: .9rem; overflow-wrap: break-word; }
 .notif-meta { display: block; margin-top: 4px; color: var(--tenue); font-size: .8rem; }
 .notif-ir { display: inline-block; margin-top: 6px; font-weight: 600; font-size: .88rem; color: var(--primario); text-decoration: none; }
 .notif-cerrar { width: 32px; height: 32px; border: 0; border-radius: 8px; background: transparent; color: var(--tenue); cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -465,7 +468,7 @@ body.modo-panel .dividido { grid-template-columns: minmax(300px, 400px) minmax(0
 .lista-avisos { max-height: min(60vh, 560px); overflow: auto; margin: 0 -4px; padding: 0 4px; }
 .aviso-lista { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 12px 6px; border-radius: 10px; }
 .aviso-lista.nuevo { background: rgba(56, 189, 248, .06); }
-.aviso-lista p { margin: 2px 0 0; color: var(--suave); font-size: .9rem; overflow-wrap: anywhere; }
+.aviso-lista p { margin: 2px 0 0; color: var(--suave); font-size: .9rem; overflow-wrap: break-word; }
 .aviso-lista .fila.entre { flex-wrap: nowrap; align-items: baseline; gap: 10px; }
 .aviso-lista .fila.entre strong { min-width: 0; }
 .aviso-lista .fila.entre .tenue { flex: none; }
@@ -522,13 +525,13 @@ button.notif-ir { background: none; border: 0; padding: 0; cursor: pointer; font
 .mapa-vacio { position: absolute; inset: 0; display: grid; place-items: center; color: var(--suave); padding: 20px; text-align: center; pointer-events: none; }
 .mapa-vacio[hidden] { display: none; }
 .mapa-ficha { background: var(--capa); border: 1px solid var(--borde); border-radius: 14px; padding: 14px 16px; min-height: 120px; display: grid; gap: 10px; align-content: start; }
-.mapa-ficha h3 { margin: 0; font-size: 1.05rem; overflow-wrap: anywhere; }
+.mapa-ficha h3 { margin: 0; font-size: 1.05rem; overflow-wrap: break-word; }
 .mapa-ficha p { margin: 0; }
 .mapa-ficha-cab { display: flex; gap: 12px; align-items: center; }
 .mapa-icono { width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center; font-weight: 700; flex: 0 0 auto; }
 .mapa-vecinos summary { cursor: pointer; color: var(--suave); font-size: .9rem; }
 .mapa-vecinos ul { max-height: 220px; overflow: auto; margin-top: 6px; }
-.mapa-vecinos li { padding: 3px 0; overflow-wrap: anywhere; }
+.mapa-vecinos li { padding: 3px 0; overflow-wrap: break-word; }
 .mapa-acciones { flex-wrap: wrap; }
 .mapa-ruta { margin: 0; padding-left: 20px; display: grid; gap: 4px; }
 .mapa-leyenda { min-width: 0; max-width: 100%; }
@@ -564,8 +567,8 @@ button.notif-ir { background: none; border: 0; padding: 0; cursor: pointer; font
 .expediente-fila { display: grid; gap: 6px; padding: 14px 16px; text-decoration: none; color: var(--texto); }
 .expediente-fila:hover { border-color: var(--primario); }
 .expediente-cab { display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
-.expediente-titulo { font-size: 1.05rem; overflow-wrap: anywhere; }
-.cabecera-pagina.expediente h1 { margin: 6px 0 4px; overflow-wrap: anywhere; }
+.expediente-titulo { font-size: 1.05rem; overflow-wrap: break-word; }
+.cabecera-pagina.expediente h1 { margin: 6px 0 4px; overflow-wrap: break-word; }
 .expediente-responsable { display: grid; gap: 4px; }
 .expediente-responsable select { width: auto; min-width: 160px; }
 .veredicto-caja { display: flex; gap: 14px; align-items: center; justify-content: space-between; flex-wrap: wrap; background: var(--capa); border: 1px solid var(--borde); border-left: 4px solid var(--primario); border-radius: 0; padding: 14px 16px; margin-bottom: 14px; }
@@ -589,8 +592,8 @@ details.tarjeta-suave[open] > summary { margin-bottom: 12px; }
 .hallazgos { display: grid; gap: 10px; }
 .hallazgo { border: 1px solid var(--borde); border-radius: 12px; padding: 12px 14px; display: grid; gap: 6px; }
 .hallazgo p { margin: 0; }
-.hallazgo-que { font-size: 1rem; white-space: pre-wrap; overflow-wrap: anywhere; }
-.hallazgo-como { font-size: .9rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+.hallazgo-que { font-size: 1rem; white-space: pre-wrap; overflow-wrap: break-word; }
+.hallazgo-como { font-size: .9rem; white-space: pre-wrap; overflow-wrap: break-word; }
 .segmentado { display: inline-flex; border: 1px solid var(--borde2); border-radius: 10px; overflow: hidden; }
 .segmentado button { background: none; border: 0; color: var(--suave); padding: 0 14px; min-height: 40px; font: inherit; cursor: pointer; }
 .segmentado button + button { border-left: 1px solid var(--borde2); }
@@ -603,22 +606,22 @@ details.tarjeta-suave[open] > summary { margin-bottom: 12px; }
 .dato { display: grid; grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) auto; gap: 6px 14px; align-items: center; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 12px; }
 .dato.caido .indicador { text-decoration: line-through; opacity: .75; }
 .dato-valor { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; min-width: 0; }
-.dato-valor .indicador { overflow-wrap: anywhere; }
+.dato-valor .indicador { overflow-wrap: break-word; }
 .dato-ficha { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
 .dato-ficha select { width: auto; }
 .previas { display: grid; gap: 6px; margin: 10px 0; }
 .previa { display: grid; grid-template-columns: auto minmax(0, 1.3fr) minmax(0, 1fr) minmax(0, 1fr); gap: 8px; align-items: center; }
-.previa .indicador { overflow-wrap: anywhere; }
+.previa .indicador { overflow-wrap: break-word; }
 .previa.error .indicador { border-color: var(--rojo); }
 .custodia { display: grid; gap: 10px; }
 .prueba-custodia { border: 1px solid var(--borde); border-radius: 12px; padding: 12px 14px; display: grid; gap: 6px; }
 .prueba-custodia p { margin: 0; }
 .huella { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-.huella .mono { font-size: .8rem; overflow-wrap: anywhere; word-break: break-all; color: var(--suave); }
+.huella .mono { font-size: .8rem; overflow-wrap: break-word; word-break: break-all; color: var(--suave); }
 .registro summary { cursor: pointer; color: var(--suave); }
 .prueba-grande { max-width: 100%; max-height: 70vh; border-radius: 10px; display: block; margin: 0 auto; }
 .comentario { border-bottom: 1px solid var(--borde); padding-bottom: 10px; }
-.comentario p { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.comentario p { margin: 4px 0 0; white-space: pre-wrap; overflow-wrap: break-word; }
 .historial { max-height: 480px; overflow: auto; }
 .filtros-mapa { margin-bottom: 10px; }
 .filtros-mapa summary { cursor: pointer; color: var(--suave); margin-bottom: 8px; }
